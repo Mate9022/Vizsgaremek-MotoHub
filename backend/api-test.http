@@ -1,0 +1,29 @@
+### Összes ügyfél
+GET http://localhost:3000/api/customers
+
+### Egy ügyfél
+GET http://localhost:3000/api/customers/1
+
+### Új ügyfél
+POST http://localhost:3000/api/customers
+Content-Type: application/json
+
+{
+    "name": "Nagy Péter",
+    "phone": "06305555555",
+    "email": "nagy.peter@example.com"
+}
+
+### Ügyfél módosítása
+PUT http://localhost:3000/api/customers/3
+Content-Type: application/json
+
+### Ügyfél törlése
+DELETE http://localhost:3000/api/customers/3
+
+
+{
+    "name": "Nagy Péter",
+    "phone": "06306666666",
+    "email": "peter.nagy@example.com"
+}
