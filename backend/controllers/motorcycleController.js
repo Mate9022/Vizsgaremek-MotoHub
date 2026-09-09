@@ -1,4 +1,5 @@
 const motorcycleService = require('../services/motorcycleService');
+const customerService = require('../services/customerService');
 
 function getAllMotorcycles(req, res) {
     const motorcycles = motorcycleService.getAllMotorcycles();
@@ -36,6 +37,14 @@ function createMotorcycle(req, res) {
         });
     }
 
+    const customer = customerService.getCustomerById(customerId);
+
+if (!customer) {
+    return res.status(404).json({
+        message: 'Ügyfél nem található.'
+    });
+}
+
     const motorcycle = motorcycleService.createMotorcycle(
         customerId,
         brand,
@@ -65,6 +74,14 @@ function updateMotorcycle(req, res) {
             message: 'Az ügyfél, a márka és a modell megadása kötelező.'
         });
     }
+
+    const customer = customerService.getCustomerById(customerId);
+
+if (!customer) {
+    return res.status(404).json({
+        message: 'Ügyfél nem található.'
+    });
+}
 
     const motorcycle = motorcycleService.updateMotorcycle(
         id,

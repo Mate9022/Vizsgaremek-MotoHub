@@ -40,6 +40,18 @@ db.exec(`
     )
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS labor_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        work_order_id INTEGER NOT NULL,
+        description TEXT NOT NULL,
+        hours REAL NOT NULL,
+        hourly_rate REAL NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (work_order_id) REFERENCES work_orders(id)
+    )
+`);
+
 console.log('Adatbázis táblák létrehozva.');
 
 db.close();

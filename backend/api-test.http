@@ -133,3 +133,166 @@ DELETE http://localhost:3000/api/work-orders/1
 
 ### Törölt munkalap lekérése
 GET http://localhost:3000/api/work-orders/1
+
+### Motor létrehozása nem létező ügyféllel
+POST http://localhost:3000/api/motorcycles
+Content-Type: application/json
+
+{
+    "customerId": 999,
+    "brand": "Honda",
+    "model": "CBR600RR",
+    "modelYear": 2020,
+    "licensePlate": "TEST-01",
+    "vin": "TEST123456789"
+}
+
+### Munkalap létrehozása nem létező motorral
+POST http://localhost:3000/api/work-orders
+Content-Type: application/json
+
+{
+    "motorcycleId": 999,
+    "description": "Teszt nem létező motorral"
+}
+
+### Munkalap módosítása nem létező motorral
+PUT http://localhost:3000/api/work-orders/1
+Content-Type: application/json
+
+{
+    "motorcycleId": 2,
+    "status": "IN_PROGRESS",
+    "description": "Teszt nem létező motorral"
+}
+
+### Összes ügyfél
+GET http://localhost:3000/api/customers
+
+### Összes motor
+GET http://localhost:3000/api/motorcycles
+
+### Összes munkalap
+GET http://localhost:3000/api/work-orders
+
+### Motor 2 törlése
+DELETE http://localhost:3000/api/motorcycles/2
+
+### Motor 3 törlése
+DELETE http://localhost:3000/api/motorcycles/3
+
+### Motor 4 törlése
+DELETE http://localhost:3000/api/motorcycles/4
+
+### Motor 5 törlése
+DELETE http://localhost:3000/api/motorcycles/5
+
+### Ügyfelek
+GET http://localhost:3000/api/customers
+
+### Motorok
+GET http://localhost:3000/api/motorcycles
+
+### Munkalapok
+GET http://localhost:3000/api/work-orders
+
+### Összes munkadíj
+GET http://localhost:3000/api/labor-items
+
+### Új munkadíj
+POST http://localhost:3000/api/labor-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Olajcsere",
+    "hours": 1.5,
+    "hourlyRate": 8000
+}
+
+### Új munkadíj
+POST http://localhost:3000/api/labor-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Olajcsere",
+    "hours": 1.5,
+    "hourlyRate": 8000
+}
+
+### Egy munkadíj tétel
+GET http://localhost:3000/api/labor-items/1
+
+### Munkadíj módosítása
+PUT http://localhost:3000/api/labor-items/1
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Olajcsere és szűrőcsere",
+    "hours": 2,
+    "hourlyRate": 8500
+}
+
+### Munkadíj törlése
+DELETE http://localhost:3000/api/labor-items/1
+
+### Törölt munkadíj lekérése
+GET http://localhost:3000/api/labor-items/1
+
+### Labor tétel létrehozása nem létező munkalappal
+POST http://localhost:3000/api/labor-items
+Content-Type: application/json
+
+{
+    "workOrderId": 999,
+    "description": "Teszt hibás munkalappal",
+    "hours": 1,
+    "hourlyRate": 8000
+}
+
+### Hibás labor tétel módosítása - negatív munkaóra
+PUT http://localhost:3000/api/labor-items/1
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Hibás teszt",
+    "hours": -2,
+    "hourlyRate": 8000
+}
+
+### Hibás labor tétel módosítása - negatív óradíj
+PUT http://localhost:3000/api/labor-items/1
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Hibás teszt",
+    "hours": 2,
+    "hourlyRate": -5000
+}
+
+### Egy munkadíj tétel végösszeggel
+GET http://localhost:3000/api/labor-items/1
+
+### Új munkadíj - teszt
+POST http://localhost:3000/api/labor-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Olajcsere és szűrőcsere",
+    "hours": 2,
+    "hourlyRate": 8500
+}
+
+### Labor tétel végösszeggel
+GET http://localhost:3000/api/labor-items/2
+
+### Labor tétel végösszeggel
+GET http://localhost:3000/api/labor-items/2
+
+### Összes munkadíj végösszeggel
+GET http://localhost:3000/api/labor-items

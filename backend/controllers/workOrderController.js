@@ -1,4 +1,5 @@
 const workOrderService = require('../services/workOrderService');
+const motorcycleService = require('../services/motorcycleService');
 
 const validStatuses = [
     'OPEN',
@@ -47,6 +48,14 @@ function createWorkOrder(req, res) {
         });
     }
 
+    const motorcycle = motorcycleService.getMotorcycleById(motorcycleId);
+
+if (!motorcycle) {
+    return res.status(404).json({
+        message: 'Motor nem található.'
+    });
+}
+
     const workOrder = workOrderService.createWorkOrder(
         motorcycleId,
         status || 'OPEN',
@@ -76,6 +85,14 @@ function updateWorkOrder(req, res) {
             message: 'Érvénytelen munkalap státusz.'
         });
     }
+
+    const motorcycle = motorcycleService.getMotorcycleById(motorcycleId);
+
+if (!motorcycle) {
+    return res.status(404).json({
+        message: 'Motor nem található.'
+    });
+}
 
     const workOrder = workOrderService.updateWorkOrder(
         id,
