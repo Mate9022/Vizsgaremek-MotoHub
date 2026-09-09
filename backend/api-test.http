@@ -76,3 +76,60 @@ DELETE http://localhost:3000/api/motorcycles/1
 
 ### Törölt motor ellenőrzése
 GET http://localhost:3000/api/motorcycles/1
+
+### Új motor munkalap teszteléséhez
+POST http://localhost:3000/api/motorcycles
+Content-Type: application/json
+
+{
+    "customerId": 1,
+    "brand": "Honda",
+    "model": "CBR600RR",
+    "modelYear": 2020,
+    "licensePlate": "MOTO-01",
+    "vin": "JH2PC123456789"
+}
+
+### Új munkalap
+POST http://localhost:3000/api/work-orders
+Content-Type: application/json
+
+{
+    "motorcycleId": 2,
+    "description": "Olajcsere és fékbetét ellenőrzés"
+}
+
+### Összes munkalap
+GET http://localhost:3000/api/work-orders
+
+### Egy munkalap
+GET http://localhost:3000/api/work-orders/1
+
+### Nem létező munkalap
+GET http://localhost:3000/api/work-orders/999
+
+### Munkalap módosítása
+PUT http://localhost:3000/api/work-orders/1
+Content-Type: application/json
+
+{
+    "motorcycleId": 5,
+    "status": "IN_PROGRESS",
+    "description": "Olajcsere, fékbetét ellenőrzés és teljes átvizsgálás"
+}
+
+### Hibás munkalap státusz
+PUT http://localhost:3000/api/work-orders/1
+Content-Type: application/json
+
+{
+    "motorcycleId": 5,
+    "status": "VALAMI_HIBAS",
+    "description": "Teszt hibás státusszal"
+}
+
+### Munkalap törlése
+DELETE http://localhost:3000/api/work-orders/1
+
+### Törölt munkalap lekérése
+GET http://localhost:3000/api/work-orders/1

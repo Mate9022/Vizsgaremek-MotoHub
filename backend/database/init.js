@@ -27,6 +27,19 @@ db.exec(`
     )
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS work_orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        motorcycle_id INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'OPEN',
+        description TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (motorcycle_id) REFERENCES motorcycles(id)
+    )
+`);
+
 console.log('Adatbázis táblák létrehozva.');
 
 db.close();
