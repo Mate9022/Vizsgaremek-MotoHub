@@ -296,3 +296,70 @@ GET http://localhost:3000/api/labor-items/2
 
 ### Összes munkadíj végösszeggel
 GET http://localhost:3000/api/labor-items
+
+### Part items - összes
+GET http://localhost:3000/api/part-items
+
+### Part items - létrehozás
+POST http://localhost:3000/api/part-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "name": "Olajszűrő",
+    "quantity": 1,
+    "unitPrice": 4500
+}
+
+### Part items - egy tétel
+GET http://localhost:3000/api/part-items/1
+
+### Part items - módosítás
+PUT http://localhost:3000/api/part-items/1
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "name": "Olajszűrő prémium",
+    "quantity": 2,
+    "unitPrice": 5000
+}
+
+### Part items - törlés
+DELETE http://localhost:3000/api/part-items/1
+
+### Part items - összes törlés után
+GET http://localhost:3000/api/part-items
+
+### Part items - hibás munkalap
+POST http://localhost:3000/api/part-items
+Content-Type: application/json
+
+{
+    "workOrderId": 999,
+    "name": "Fékbetét",
+    "quantity": 1,
+    "unitPrice": 15000
+}
+
+### Part items - hibás mennyiség
+POST http://localhost:3000/api/part-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "name": "Fékbetét",
+    "quantity": -2,
+    "unitPrice": 15000
+}
+
+### Part items - hibás egységár
+POST http://localhost:3000/api/part-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "name": "Fékbetét",
+    "quantity": 1,
+    "unitPrice": -15000
+}

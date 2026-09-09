@@ -3,12 +3,20 @@ const db = require('./database');
 console.log('Tesztadatok feltöltése...');
 
 db.exec(`
+    DELETE FROM part_items;
+    DELETE FROM labor_items;
     DELETE FROM work_orders;
     DELETE FROM motorcycles;
     DELETE FROM customers;
 
     DELETE FROM sqlite_sequence
-    WHERE name IN ('customers', 'motorcycles', 'work_orders');
+    WHERE name IN (
+        'customers',
+        'motorcycles',
+        'work_orders',
+        'labor_items',
+        'part_items'
+    );
 `);
 
 console.log('Régi adatok törölve.');
