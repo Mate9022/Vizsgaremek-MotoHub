@@ -1,0 +1,20 @@
+<div class="customers-page">
+
+    <h1>Ügyfelek</h1>
+
+    <p>Itt kezelhetjük a MotoHub ügyfeleit.</p>
+
+    <button>Új ügyfél</button>
+
+    <h2>Ügyfelek listája</h2>
+
+    @for (customer of customers(); track customer.id) {
+        <p>
+            {{ customer.id }} -
+            {{ customer.name }} -
+            {{ customer.phone }} -
+            {{ customer.email }}
+        </p>
+    }
+
+</div>

@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const db = require('./database/database');
 
 const customerRoutes = require('./routes/customerRoutes');
@@ -9,6 +10,7 @@ const partItemRoutes = require('./routes/partItemRoutes');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const PORT = 3000;
