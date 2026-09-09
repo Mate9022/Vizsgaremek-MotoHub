@@ -1,8 +1,10 @@
 ### Összes ügyfél
 GET http://localhost:3000/api/customers
 
+
 ### Egy ügyfél
 GET http://localhost:3000/api/customers/1
+
 
 ### Új ügyfél
 POST http://localhost:3000/api/customers
@@ -14,16 +16,63 @@ Content-Type: application/json
     "email": "nagy.peter@example.com"
 }
 
+
 ### Ügyfél módosítása
 PUT http://localhost:3000/api/customers/3
 Content-Type: application/json
-
-### Ügyfél törlése
-DELETE http://localhost:3000/api/customers/3
-
 
 {
     "name": "Nagy Péter",
     "phone": "06306666666",
     "email": "peter.nagy@example.com"
 }
+
+
+### Ügyfél törlése
+DELETE http://localhost:3000/api/customers/3
+
+
+### Összes motor
+GET http://localhost:3000/api/motorcycles
+
+
+### Új motor
+POST http://localhost:3000/api/motorcycles
+Content-Type: application/json
+
+{
+    "customerId": 1,
+    "brand": "Yamaha",
+    "model": "MT-07",
+    "modelYear": 2022,
+    "licensePlate": "ABC-123",
+    "vin": "JYARM123456789"
+}
+
+### Összes motor
+GET http://localhost:3000/api/motorcycles
+
+### Egy motor
+GET http://localhost:3000/api/motorcycles/1
+
+### Nem létező motor
+GET http://localhost:3000/api/motorcycles/999
+
+### Motor módosítása
+PUT http://localhost:3000/api/motorcycles/1
+Content-Type: application/json
+
+{
+    "customerId": 1,
+    "brand": "Yamaha",
+    "model": "MT-09",
+    "modelYear": 2023,
+    "licensePlate": "XYZ-789",
+    "vin": "JYARM123456789"
+}
+
+### Motor törlése
+DELETE http://localhost:3000/api/motorcycles/1
+
+### Törölt motor ellenőrzése
+GET http://localhost:3000/api/motorcycles/1

@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./database/database');
 
 const customerRoutes = require('./routes/customerRoutes');
+const motorcycleRoutes = require('./routes/motorcycleRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/customers', customerRoutes);
+app.use('/api/motorcycles', motorcycleRoutes);
 
 app.listen(PORT, () => {
     console.log(`MotoHub backend elindult a ${PORT} porton.`);
