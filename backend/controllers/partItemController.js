@@ -7,6 +7,23 @@ function getAllPartItems(req, res) {
     res.json(partItems);
 }
 
+function getPartItemsByWorkOrder(req, res) {
+
+    const workOrderId = Number(req.params.workOrderId);
+
+    const workOrder = workOrderService.getWorkOrderById(workOrderId);
+
+    if (!workOrder) {
+        return res.status(404).json({
+            message: 'Munkalap nem található.'
+        });
+    }
+
+    const partItems = partItemService.getPartItemsByWorkOrder(workOrderId);
+
+    res.json(partItems);
+}
+
 function createPartItem(req, res) {
     const {
         workOrderId,
@@ -147,5 +164,6 @@ module.exports = {
     createPartItem,
     getPartItemById,
     updatePartItem,
-    deletePartItem
+    deletePartItem,
+    getPartItemsByWorkOrder
 };

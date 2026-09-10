@@ -12,6 +12,19 @@ function getPartItemById(id) {
         .get(id);
 }
 
+function getPartItemsByWorkOrder(workOrderId) {
+
+    return db
+        .prepare(`
+            SELECT *
+            FROM part_items
+            WHERE work_order_id = ?
+            ORDER BY id DESC
+        `)
+        .all(workOrderId);
+
+}
+
 function createPartItem(
     workOrderId,
     name,
@@ -86,5 +99,6 @@ module.exports = {
     getPartItemById,
     createPartItem,
     updatePartItem,
-    deletePartItem
+    deletePartItem,
+    getPartItemsByWorkOrder
 };

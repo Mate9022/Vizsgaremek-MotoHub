@@ -1,0 +1,666 @@
+<div class="work-orders-page">
+
+    <div class="page-header">
+
+        <div>
+            <h1>Munkalapok</h1>
+            <p>Szervizelési munkalapok kezelése</p>
+        </div>
+
+        <button
+            class="add-button"
+            (click)="
+                showForm = !showForm;
+                editMode = false;
+            ">
+            + Új munkalap
+        </button>
+
+    </div>
+
+
+    @if (showForm) {
+
+        <div class="form-card">
+
+            <div class="form-header">
+
+                <div>
+                    <h2>
+                        {{ editMode
+                            ? 'Munkalap szerkesztése'
+                            : 'Új munkalap'
+                        }}
+                    </h2>
+
+                    <p>
+                        {{ editMode
+                            ? 'A munkalap adatainak módosítása'
+                            : 'Új szervizelési munkalap létrehozása'
+                        }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form
+                #workOrderForm
+                (submit)="
+                    editMode
+                        ? updateWorkOrder(
+                            motorcycle.value,
+                            description.value,
+                            status.value,
+                            workOrderForm
+                        )
+                        : createWorkOrder(
+                            motorcycle.value,
+                            description.value,
+                            status.value,
+                            workOrderForm
+                        );
+                    $event.preventDefault()
+                ">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="motorcycle">
+                            Motorkerékpár *
+                        </label>
+
+                        <select
+                            #motorcycle
+                            id="motorcycle"
+                            required>
+
+                            <option value="">
+                                Válassz motorkerékpárt
+                            </option>
+
+                            @for (
+                                motorcycleItem of motorcycles();
+                                track motorcycleItem.id
+                            ) {
+
+                                <option
+                                    [value]="motorcycleItem.id"
+                                    [selected]="
+                                        motorcycleItem.id === selectedWorkOrder()?.motorcycle_id
+                                    ">
+
+                                    {{ motorcycleItem.brand }}
+                                    {{ motorcycleItem.model }}
+
+                                    @if (motorcycleItem.license_plate) {
+                                        ({{ motorcycleItem.license_plate }})
+                                    }
+
+                                </option>
+
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Státusz *
+                        </label>
+
+                        <select
+                            #status
+                            id="status"
+                            [value]="selectedWorkOrder()?.status || 'OPEN'"
+                            required>
+
+                            <option value="OPEN">
+                                Nyitott
+                            </option>
+
+                            <option value="IN_PROGRESS">
+                                Folyamatban
+                            </option>
+
+                            <option value="WAITING_PARTS">
+                                Alkatrészre vár
+                            </option>
+
+                            <option value="READY_FOR_PICKUP">
+                                Átadásra kész
+                            </option>
+
+                            <option value="COMPLETED">
+                                Befejezve
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group form-group-full">
+
+                        <label for="description">
+                            Leírás *
+                        </label>
+
+                        <textarea
+                            #description
+                            id="description"
+                            rows="4"
+                            placeholder="Pl. Olajcsere, fékbetét ellenőrzése..."
+                            required>{{ selectedWorkOrder()?.description || '' }}</textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        (click)="
+                            showForm = false;
+                            editMode = false;
+                        ">
+                        Mégse
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save-button">
+
+                        {{ editMode
+                            ? 'Módosítás mentése'
+                            : 'Mentés'
+                        }}
+
+                    </button>
+
+                </div>
+
+
+                <div class="required-info">
+                    * Kötelező mező
+                </div>
+
+            </form>
+
+        </div>
+
+    }
+
+
+    @if (selectedWorkOrder()) {
+
+        <div class="details-card">
+
+            <div class="details-header">
+
+                <div>
+                    <h2>
+                        Munkalap #{{ selectedWorkOrder()!.id }}
+                    </h2>
+
+                    <p>
+                        Munkalap részletei
+                    </p>
+                </div>
+
+
+                <div>
+
+                    <button
+                        class="action-button"
+                        (click)="editWorkOrder()">
+                        Szerkesztés
+                    </button>
+
+                    <button
+                        class="delete-button"
+                        (click)="deleteWorkOrder()">
+                        Törlés
+                    </button>
+
+                    <button
+                        class="close-button"
+                        (click)="
+                            selectedWorkOrder.set(null);
+                            partItems.set([]);
+                            showPartForm = false;
+                            editingPartItem.set(null);
+                        ">
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Motorkerékpár
+                    </span>
+
+                    <strong>
+                        {{ selectedWorkOrder()!.motorcycleName }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Státusz
+                    </span>
+
+                    <strong>
+                        {{ statusLabels[selectedWorkOrder()!.status] }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item detail-item-full">
+
+                    <span class="detail-label">
+                        Leírás
+                    </span>
+
+                    <p>
+                        {{ selectedWorkOrder()!.description }}
+                    </p>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Létrehozva
+                    </span>
+
+                    <strong>
+                        {{ selectedWorkOrder()!.created_at }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Utolsó módosítás
+                    </span>
+
+                    <strong>
+                        {{ selectedWorkOrder()!.updated_at }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ALKATRÉSZEK -->
+
+            <div class="parts-section">
+
+                <div class="parts-header">
+
+                    <div>
+                        <h3>
+                            Alkatrészek
+                        </h3>
+
+                        <p>
+                            A munkalaphoz felhasznált alkatrészek
+                        </p>
+                    </div>
+
+
+                    <div class="parts-header-actions">
+
+                        <span>
+                            {{ partItems().length }} tétel
+                        </span>
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            (click)="
+                                editingPartItem.set(null);
+                                showPartForm = !showPartForm;
+                            ">
+                            + Alkatrész hozzáadása
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ALKATRÉSZ ŰRLAP -->
+
+                @if (showPartForm) {
+
+                    <form
+                        #partForm
+                        class="part-form"
+                        (submit)="
+                            editingPartItem()
+                                ? updatePartItem(
+                                    partName.value,
+                                    partQuantity.value,
+                                    partUnitPrice.value,
+                                    partForm
+                                )
+                                : addPartItem(
+                                    partName.value,
+                                    partQuantity.value,
+                                    partUnitPrice.value,
+                                    partForm
+                                );
+                            $event.preventDefault()
+                        ">
+
+                        <div class="part-form-grid">
+
+                            <div class="form-group">
+
+                                <label for="partName">
+                                    Alkatrész neve *
+                                </label>
+
+                                <input
+                                    #partName
+                                    id="partName"
+                                    type="text"
+                                    placeholder="Pl. Fékbetét"
+                                    [value]="editingPartItem()?.name || ''"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="partQuantity">
+                                    Mennyiség *
+                                </label>
+
+                                <input
+                                    #partQuantity
+                                    id="partQuantity"
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Pl. 2"
+                                    [value]="editingPartItem()?.quantity || ''"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="partUnitPrice">
+                                    Egységár (Ft) *
+                                </label>
+
+                                <input
+                                    #partUnitPrice
+                                    id="partUnitPrice"
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Pl. 18000"
+                                    [value]="editingPartItem()?.unit_price || ''"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="button"
+                                class="cancel-button"
+                                (click)="
+                                    showPartForm = false;
+                                    editingPartItem.set(null);
+                                ">
+                                Mégse
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="save-button">
+
+                                {{ editingPartItem()
+                                    ? 'Módosítás mentése'
+                                    : 'Alkatrész mentése'
+                                }}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                }
+
+
+                <!-- ALKATRÉSZ LISTA -->
+
+                @if (partItems().length > 0) {
+
+                    <div class="parts-table-wrapper">
+
+                        <table class="parts-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Alkatrész</th>
+                                    <th>Mennyiség</th>
+                                    <th>Egységár</th>
+                                    <th>Összesen</th>
+                                    <th>Műveletek</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @for (
+                                    partItem of partItems();
+                                    track partItem.id
+                                ) {
+
+                                    <tr>
+
+                                        <td>
+                                            <strong>
+                                                {{ partItem.name }}
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+                                            {{ partItem.quantity }} db
+                                        </td>
+
+
+                                        <td>
+                                            {{ partItem.unit_price }} Ft
+                                        </td>
+
+
+                                        <td>
+                                            <strong>
+                                                {{ partItem.quantity * partItem.unit_price }} Ft
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+
+                                            <div class="action-buttons">
+
+                                                <button
+                                                    type="button"
+                                                    class="action-button"
+                                                    (click)="editPartItem(partItem)">
+                                                    Szerkesztés
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="delete-button"
+                                                    (click)="deletePartItem(partItem.id)">
+                                                    Törlés
+                                                </button>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                } @else if (!showPartForm) {
+
+                    <div class="empty-parts">
+
+                        Ehhez a munkalaphoz még nincs
+                        rögzített alkatrész.
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- MUNKALAPOK LISTÁJA -->
+
+    <div class="table-card">
+
+        <div class="table-header">
+
+            <h2>
+                Munkalapok
+            </h2>
+
+            <span>
+                {{ workOrders().length }} munkalap
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Azonosító</th>
+                        <th>Motorkerékpár</th>
+                        <th>Leírás</th>
+                        <th>Státusz</th>
+                        <th>Létrehozva</th>
+                        <th>Műveletek</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @for (
+                        workOrder of workOrders();
+                        track workOrder.id
+                    ) {
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    #{{ workOrder.id }}
+                                </strong>
+                            </td>
+
+
+                            <td>
+                                {{ workOrder.motorcycleName }}
+                            </td>
+
+
+                            <td>
+                                {{ workOrder.description }}
+                            </td>
+
+
+                            <td>
+                                {{ statusLabels[workOrder.status] }}
+                            </td>
+
+
+                            <td>
+                                {{ workOrder.created_at }}
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    class="action-button"
+                                    (click)="viewWorkOrder(workOrder)">
+                                    Megtekintés
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
