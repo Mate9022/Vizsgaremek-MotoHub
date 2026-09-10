@@ -1,0 +1,405 @@
+.motorcycles-page {
+    padding: 40px;
+}
+
+
+/* =========================
+   Header
+   ========================= */
+
+.page-header {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-header h1 {
+    margin: 0;
+
+    font-size: 32px;
+    color: #1a1a1a;
+}
+
+.page-header p {
+    margin: 8px 0 0;
+
+    color: #6b7280;
+}
+
+
+/* =========================
+   Add button
+   ========================= */
+
+.add-button {
+    padding: 12px 20px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #0066cc;
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.add-button:hover {
+    background: #0052a3;
+}
+
+
+/* =========================
+   Table card
+   ========================= */
+
+.table-card {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   Table header
+   ========================= */
+
+.table-header {
+    padding: 20px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table-header h2 {
+    margin: 0;
+
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.table-header span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =========================
+   Table
+   ========================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 800px;
+}
+
+thead {
+    background: #f9fafb;
+}
+
+th {
+    padding: 14px 20px;
+
+    text-align: left;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+    padding: 17px 20px;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+tbody tr {
+    transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+td strong {
+    color: #1f2937;
+}
+
+
+/* =========================
+   Action button
+   ========================= */
+
+.action-button {
+    padding: 7px 12px;
+
+    border: 1px solid #dbeafe;
+    border-radius: 7px;
+
+    background: #eff6ff;
+    color: #0066cc;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.action-button:hover {
+    background: #dbeafe;
+}
+
+
+/* =========================
+   Mobile
+   ========================= */
+
+@media (max-width: 768px) {
+
+    .motorcycles-page {
+        padding: 25px 16px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+    .add-button {
+        width: 100%;
+    }
+
+    .table-header {
+        padding: 18px;
+    }
+
+}
+
+/* =========================
+   Form
+   ========================= */
+
+.form-card {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+
+    padding: 28px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+    box-sizing: border-box;
+}
+
+.form-header {
+    margin-bottom: 25px;
+}
+
+.form-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    color: #1f2937;
+}
+
+.form-header p {
+    margin: 7px 0 0;
+
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* Form grid */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.form-group label {
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: white;
+
+    color: #1f2937;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #0066cc;
+
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+
+/* Form buttons */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 25px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.cancel-button,
+.save-button {
+    padding: 11px 20px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.cancel-button {
+    border: 1px solid #d1d5db;
+
+    background: white;
+    color: #374151;
+}
+
+.cancel-button:hover {
+    background: #f9fafb;
+}
+
+.save-button {
+    border: none;
+
+    background: #0066cc;
+    color: white;
+}
+
+.save-button:hover {
+    background: #0052a3;
+}
+
+
+/* =========================
+   Mobile form
+   ========================= */
+
+@media (max-width: 768px) {
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cancel-button,
+    .save-button {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================
+   Required info
+   ========================= */
+
+.required-info {
+    margin-top: 12px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    text-align: right;
+}

@@ -1,0 +1,227 @@
+<div class="motorcycles-page">
+
+    <div class="page-header">
+
+        <div>
+            <h1>Motorkerékpárok</h1>
+            <p>Nyilvántartott motorkerékpárok kezelése</p>
+        </div>
+
+        <button
+            class="add-button"
+            (click)="showForm = !showForm">
+            + Új motorkerékpár
+        </button>
+
+    </div>
+
+
+    @if (showForm) {
+
+        <div class="form-card">
+
+            <div class="form-header">
+                <div>
+                    <h2>Új motorkerékpár</h2>
+                    <p>Új motorkerékpár hozzáadása a nyilvántartáshoz</p>
+                </div>
+            </div>
+
+
+            <form>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="brand">
+                            Márka *
+                        </label>
+
+                        <input
+                            id="brand"
+                            type="text"
+                            placeholder="Pl. Yamaha">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="model">
+                            Modell *
+                        </label>
+
+                        <input
+                            id="model"
+                            type="text"
+                            placeholder="Pl. MT-07">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="modelYear">
+                            Gyártási év
+                        </label>
+
+                        <input
+                            id="modelYear"
+                            type="number"
+                            placeholder="Pl. 2022">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="licensePlate">
+                            Rendszám
+                        </label>
+
+                        <input
+                            id="licensePlate"
+                            type="text"
+                            placeholder="Pl. ABC-123">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="vin">
+                            Alvázszám (VIN)
+                        </label>
+
+                        <input
+                            id="vin"
+                            type="text"
+                            placeholder="17 karakteres alvázszám">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="customer">
+                            Tulajdonos *
+                        </label>
+
+                        <select id="customer">
+
+    <option value="">
+        Válassz ügyfelet
+    </option>
+
+    @for (customer of customers(); track customer.id) {
+
+        <option [value]="customer.id">
+            {{ customer.name }}
+        </option>
+
+    }
+
+</select>
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+    <button
+        type="button"
+        class="cancel-button"
+        (click)="showForm = false">
+        Mégse
+    </button>
+
+    <button
+        type="submit"
+        class="save-button">
+        Mentés
+    </button>
+
+</div>
+
+<div class="required-info">
+    * Kötelező mező
+</div>
+
+            </form>
+
+        </div>
+
+    }
+
+
+    <div class="table-card">
+
+        <div class="table-header">
+
+            <h2>Motorkerékpárok</h2>
+
+            <span>
+                {{ motorcycles().length }} motor
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Rendszám</th>
+                        <th>Márka</th>
+                        <th>Modell</th>
+                        <th>Év</th>
+                        <th>Tulajdonos</th>
+                        <th>Műveletek</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @for (motorcycle of motorcycles(); track motorcycle.id) {
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ motorcycle.license_plate || '-' }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ motorcycle.brand }}
+                            </td>
+
+                            <td>
+                                {{ motorcycle.model }}
+                            </td>
+
+                            <td>
+                                {{ motorcycle.year || '-' }}
+                            </td>
+
+                            <td>
+                                {{ motorcycle.customerName }}
+                            </td>
+
+                            <td>
+
+                                <button class="action-button">
+                                    Megtekintés
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

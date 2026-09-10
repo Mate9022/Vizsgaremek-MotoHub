@@ -1,0 +1,177 @@
+.dashboard {
+    min-height: calc(100vh - 70px);
+    padding: 50px;
+    box-sizing: border-box;
+    background: #f4f6f8;
+}
+
+/* Felső üdvözlő rész */
+
+.hero {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.hero p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #6b7280;
+}
+
+/* Statisztikai kártyák */
+
+.stats {
+    max-width: 1200px;
+    margin: 0 auto 45px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.stat-card {
+    padding: 28px;
+
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h2 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 600;
+    color: #555;
+}
+
+.stat-card strong {
+    display: block;
+
+    margin: 15px 0 5px;
+
+    font-size: 42px;
+    font-weight: 700;
+    color: #0066cc;
+}
+
+.stat-card p {
+    margin: 0;
+
+    color: #8a8a8a;
+    font-size: 14px;
+}
+
+/* Gyors műveletek */
+
+.quick-actions {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    padding: 30px;
+
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.quick-actions h2 {
+    margin: 0 0 20px;
+
+    font-size: 22px;
+}
+
+/* Gombok */
+
+.actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.actions a,
+.actions button {
+    display: inline-block;
+
+    padding: 13px 22px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #0066cc;
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.actions a:hover,
+.actions button:hover {
+    background: #0052a3;
+    transform: translateY(-2px);
+}
+
+/* Mobil */
+
+@media (max-width: 768px) {
+
+    .dashboard {
+        padding: 30px 16px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-actions {
+        padding: 24px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions a,
+    .actions button {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
+}

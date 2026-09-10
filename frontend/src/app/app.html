@@ -1,6 +1,68 @@
-<nav>
-    <a routerLink="/">Kezdőlap</a>
-    <a routerLink="/customers">Ügyfelek</a>
-</nav>
+<div class="app-layout">
 
-<router-outlet></router-outlet>
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span class="logo-icon">🏍</span>
+            <span class="logo-text">MotoHub</span>
+        </div>
+
+        <nav class="navigation">
+
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a routerLink="/customers" routerLinkActive="active">
+                <span>👤</span>
+                Ügyfelek
+            </a>
+
+            <a routerLink="/motorcycles" routerLinkActive="active">
+                <span>🏍</span>
+                Motorkerékpárok
+            </a>
+
+            <a routerLink="/work-orders" routerLinkActive="active">
+                <span>🔧</span>
+                Munkalapok
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="#">
+                <span>⚙</span>
+                Beállítások
+            </a>
+
+        </div>
+
+    </aside>
+
+    <div class="main-area">
+
+        <header class="topbar">
+
+            <div class="page-title">
+                MotoHub
+            </div>
+
+            <div class="user-area">
+                <span>Admin</span>
+                <span class="user-avatar">A</span>
+            </div>
+
+        </header>
+
+        <main class="content">
+
+            <router-outlet></router-outlet>
+
+        </main>
+
+    </div>
+
+</div>

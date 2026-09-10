@@ -4,17 +4,56 @@
 
     <p>Itt kezelhetjük a MotoHub ügyfeleit.</p>
 
-    <button>Új ügyfél</button>
+    <button (click)="showForm = !showForm">
+        Új ügyfél
+    </button>
+
+    @if (showForm) {
+        <div class="customer-form">
+
+            <h2>Új ügyfél</h2>
+
+            <input
+                type="text"
+                placeholder="Név"
+                #nameInput
+                required
+            >
+
+            <input
+                type="text"
+                placeholder="Telefonszám"
+                #phoneInput
+            >
+
+            <input
+                type="email"
+                placeholder="E-mail"
+                #emailInput
+            >
+
+            <button
+                (click)="createCustomer(nameInput.value, phoneInput.value, emailInput.value)"
+            >
+                Mentés
+            </button>
+
+        </div>
+    }
 
     <h2>Ügyfelek listája</h2>
 
     @for (customer of customers(); track customer.id) {
-        <p>
-            {{ customer.id }} -
-            {{ customer.name }} -
-            {{ customer.phone }} -
-            {{ customer.email }}
-        </p>
-    }
+    <p>
+        {{ customer.id }} -
+        {{ customer.name }} -
+        {{ customer.phone }} -
+        {{ customer.email }}
+
+        <button (click)="deleteCustomer(customer.id)">
+            Törlés
+        </button>
+    </p>
+}
 
 </div>

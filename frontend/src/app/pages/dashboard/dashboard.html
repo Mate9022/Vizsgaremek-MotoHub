@@ -1,4 +1,55 @@
 <div class="dashboard">
-    <h1>Üdvözöl a MotoHub!</h1>
-    <p>Motorkerékpár szervizkezelő rendszer</p>
+
+    <section class="hero">
+        <h1>Üdvözöl a MotoHub!</h1>
+
+        <p>
+            Motorkerékpár szervizkezelő rendszer
+        </p>
+    </section>
+
+    <section class="stats">
+
+    <div class="stat-card">
+        <h2>Ügyfelek</h2>
+        <strong>{{ customerCount() }}</strong>
+        <p>Összes ügyfél</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>Motorkerékpárok</h2>
+        <strong>{{ motorcycleCount() }}</strong>
+        <p>Regisztrált motor</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>Munkalapok</h2>
+        <strong>{{ workOrderCount() }}</strong>
+        <p>Összes munkalap</p>
+    </div>
+
+</section>
+
+    <section class="quick-actions">
+
+        <h2>Gyors műveletek</h2>
+
+        <div class="actions">
+
+            <a routerLink="/customers">
+                Új ügyfél
+            </a>
+
+            <button>
+                Új motorkerékpár
+            </button>
+
+            <button>
+                Új munkalap
+            </button>
+
+        </div>
+
+    </section>
+
 </div>
