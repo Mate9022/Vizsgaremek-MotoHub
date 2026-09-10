@@ -21,122 +21,200 @@
         <div class="form-card">
 
             <div class="form-header">
+
                 <div>
-                    <h2>Új motorkerékpár</h2>
-                    <p>Új motorkerékpár hozzáadása a nyilvántartáshoz</p>
+                    <h2>
+    {{ editingMotorcycle() ? 'Motorkerékpár szerkesztése' : 'Új motorkerékpár' }}
+</h2>
+
+<p>
+    {{
+        editingMotorcycle()
+            ? 'A motorkerékpár adatainak módosítása'
+            : 'Új motorkerékpár hozzáadása a nyilvántartáshoz'
+    }}
+</p>
                 </div>
+
             </div>
 
 
-            <form>
+            <form
+    #motorcycleForm
+    (submit)="
+        editingMotorcycle()
+            ? saveMotorcycle(
+                customer.value,
+                brand.value,
+                model.value,
+                modelYear.value,
+                licensePlate.value,
+                vin.value,
+                motorcycleForm
+            )
+            : createMotorcycle(
+                customer.value,
+                brand.value,
+                model.value,
+                modelYear.value,
+                licensePlate.value,
+                vin.value,
+                motorcycleForm
+            );
+        $event.preventDefault()
+    ">
 
                 <div class="form-grid">
 
+                    <!-- Márka -->
+
                     <div class="form-group">
+
                         <label for="brand">
                             Márka *
                         </label>
 
                         <input
-                            id="brand"
-                            type="text"
-                            placeholder="Pl. Yamaha">
+    #brand
+    id="brand"
+    type="text"
+    placeholder="Pl. Yamaha"
+    [value]="editingMotorcycle()?.brand || ''"
+    required>
+
                     </div>
 
 
+                    <!-- Modell -->
+
                     <div class="form-group">
+
                         <label for="model">
                             Modell *
                         </label>
 
                         <input
-                            id="model"
-                            type="text"
-                            placeholder="Pl. MT-07">
+    #model
+    id="model"
+    type="text"
+    placeholder="Pl. MT-07"
+    [value]="editingMotorcycle()?.model || ''"
+    required>
+
                     </div>
 
 
+                    <!-- Gyártási év -->
+
                     <div class="form-group">
+
                         <label for="modelYear">
                             Gyártási év
                         </label>
 
                         <input
-                            id="modelYear"
-                            type="number"
-                            placeholder="Pl. 2022">
+    #modelYear
+    id="modelYear"
+    type="number"
+    placeholder="Pl. 2022"
+    [value]="editingMotorcycle()?.year || ''">
+
                     </div>
 
 
+                    <!-- Rendszám -->
+
                     <div class="form-group">
+
                         <label for="licensePlate">
                             Rendszám
                         </label>
 
                         <input
-                            id="licensePlate"
-                            type="text"
-                            placeholder="Pl. ABC-123">
+    #licensePlate
+    id="licensePlate"
+    type="text"
+    placeholder="Pl. ABC-123"
+    [value]="editingMotorcycle()?.license_plate || ''">
+
                     </div>
 
 
+                    <!-- VIN -->
+
                     <div class="form-group">
+
                         <label for="vin">
                             Alvázszám (VIN)
                         </label>
 
                         <input
-                            id="vin"
-                            type="text"
-                            placeholder="17 karakteres alvázszám">
+    #vin
+    id="vin"
+    type="text"
+    placeholder="17 karakteres alvázszám"
+    [value]="editingMotorcycle()?.vin || ''">
+
                     </div>
 
 
+                    <!-- Tulajdonos -->
+
                     <div class="form-group">
+
                         <label for="customer">
                             Tulajdonos *
                         </label>
 
-                        <select id="customer">
+                        <select
+    #customer
+    id="customer"
+    [value]="editingMotorcycle()?.customer_id || ''"
+    required>
 
     <option value="">
         Válassz ügyfelet
     </option>
 
     @for (customer of customers(); track customer.id) {
-
         <option [value]="customer.id">
             {{ customer.name }}
         </option>
-
     }
 
 </select>
+
                     </div>
 
                 </div>
 
 
+                <!-- Gombok -->
+
                 <div class="form-actions">
 
-    <button
-        type="button"
-        class="cancel-button"
-        (click)="showForm = false">
-        Mégse
-    </button>
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        (click)="
+    showForm = false;
+    editingMotorcycle.set(null)
+">
+                        Mégse
+                    </button>
 
-    <button
-        type="submit"
-        class="save-button">
-        Mentés
-    </button>
+                    <button
+    type="submit"
+    class="save-button">
+    {{ editingMotorcycle() ? 'Módosítás mentése' : 'Mentés' }}
+</button>
 
-</div>
+                </div>
 
-<div class="required-info">
-    * Kötelező mező
-</div>
+
+                <div class="required-info">
+                    * Kötelező mező
+                </div>
 
             </form>
 
@@ -144,6 +222,10 @@
 
     }
 
+
+    <!-- =========================
+         Motorok táblázata
+         ========================= -->
 
     <div class="table-card">
 
@@ -206,11 +288,23 @@
 
                             <td>
 
-                                <button class="action-button">
-                                    Megtekintés
-                                </button>
+    <div class="action-buttons">
 
-                            </td>
+        <button
+    class="action-button"
+    (click)="editMotorcycle(motorcycle)">
+    Megtekintés
+</button>
+
+        <button
+            class="delete-button"
+            (click)="deleteMotorcycle(motorcycle.id)">
+            Törlés
+        </button>
+
+    </div>
+
+</td>
 
                         </tr>
 

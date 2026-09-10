@@ -35,4 +35,30 @@ export class MotorcycleService {
         });
     }
 
+    deleteMotorcycle(id: number) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+}
+
+updateMotorcycle(
+    id: number,
+    customerId: number,
+    brand: string,
+    model: string,
+    modelYear: number | null,
+    licensePlate: string,
+    vin: string
+) {
+    return this.http.put<Motorcycle>(
+        `${this.apiUrl}/${id}`,
+        {
+            customerId,
+            brand,
+            model,
+            modelYear,
+            licensePlate,
+            vin
+        }
+    );
+}
+
 }

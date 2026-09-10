@@ -403,3 +403,33 @@ td strong {
 
     text-align: right;
 }
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.delete-button {
+    padding: 7px 12px;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.delete-button:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+}
