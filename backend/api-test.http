@@ -363,3 +363,15 @@ Content-Type: application/json
     "quantity": 1,
     "unitPrice": -15000
 }
+
+### Labor items - létrehozás
+
+POST http://localhost:3000/api/labor-items
+Content-Type: application/json
+
+{
+    "workOrderId": 1,
+    "description": "Olajcsere",
+    "hours": 2,
+    "hourlyRate": 12000
+}
