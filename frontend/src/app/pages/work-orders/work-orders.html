@@ -235,8 +235,11 @@
                         (click)="
                             selectedWorkOrder.set(null);
                             partItems.set([]);
+                            laborItems.set([]);
                             showPartForm = false;
                             editingPartItem.set(null);
+                            showLaborForm = false;
+                            editingLaborItem.set(null);
                         ">
                         ×
                     </button>
@@ -558,6 +561,257 @@
 
                         Ehhez a munkalaphoz még nincs
                         rögzített alkatrész.
+
+                    </div>
+
+                }
+
+            </div>
+
+
+            <!-- MUNKADÍJAK -->
+
+            <div class="labor-section">
+
+                <div class="labor-header">
+
+                    <div>
+                        <h3>
+                            Munkadíjak
+                        </h3>
+
+                        <p>
+                            A munkalapon elvégzett munkák és munkadíjak
+                        </p>
+                    </div>
+
+
+                    <div class="labor-header-actions">
+
+                        <span>
+                            {{ laborItems().length }} tétel
+                        </span>
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            (click)="
+                                editingLaborItem.set(null);
+                                showLaborForm = !showLaborForm;
+                            ">
+                            + Munkadíj hozzáadása
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MUNKADÍJ ŰRLAP -->
+
+                @if (showLaborForm) {
+
+                    <form
+                        #laborForm
+                        class="labor-form"
+                        (submit)="
+                            editingLaborItem()
+                                ? updateLaborItem(
+                                    laborDescription.value,
+                                    laborHours.value,
+                                    laborHourlyRate.value,
+                                    laborForm
+                                )
+                                : addLaborItem(
+                                    laborDescription.value,
+                                    laborHours.value,
+                                    laborHourlyRate.value,
+                                    laborForm
+                                );
+                            $event.preventDefault()
+                        ">
+
+                        <div class="labor-form-grid">
+
+                            <div class="form-group">
+
+                                <label for="laborDescription">
+                                    Munkavégzés leírása *
+                                </label>
+
+                                <input
+                                    #laborDescription
+                                    id="laborDescription"
+                                    type="text"
+                                    placeholder="Pl. Olajcsere"
+                                    [value]="editingLaborItem()?.description || ''"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="laborHours">
+                                    Óraszám *
+                                </label>
+
+                                <input
+                                    #laborHours
+                                    id="laborHours"
+                                    type="number"
+                                    min="0.1"
+                                    step="0.1"
+                                    placeholder="Pl. 2"
+                                    [value]="editingLaborItem()?.hours || ''"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="laborHourlyRate">
+                                    Óradíj (Ft) *
+                                </label>
+
+                                <input
+                                    #laborHourlyRate
+                                    id="laborHourlyRate"
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Pl. 12000"
+                                    [value]="editingLaborItem()?.hourly_rate || ''"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="button"
+                                class="cancel-button"
+                                (click)="
+                                    showLaborForm = false;
+                                    editingLaborItem.set(null);
+                                ">
+                                Mégse
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="save-button">
+
+                                {{ editingLaborItem()
+                                    ? 'Módosítás mentése'
+                                    : 'Munkadíj mentése'
+                                }}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                }
+
+
+                <!-- MUNKADÍJ LISTA -->
+
+                @if (laborItems().length > 0) {
+
+                    <div class="labor-table-wrapper">
+
+                        <table class="labor-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Munkavégzés</th>
+                                    <th>Óraszám</th>
+                                    <th>Óradíj</th>
+                                    <th>Összesen</th>
+                                    <th>Műveletek</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @for (
+                                    laborItem of laborItems();
+                                    track laborItem.id
+                                ) {
+
+                                    <tr>
+
+                                        <td>
+                                            <strong>
+                                                {{ laborItem.description }}
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+                                            {{ laborItem.hours }} óra
+                                        </td>
+
+
+                                        <td>
+                                            {{ laborItem.hourly_rate }} Ft
+                                        </td>
+
+
+                                        <td>
+                                            <strong>
+                                                {{ laborItem.total_price }} Ft
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+
+                                            <div class="action-buttons">
+
+                                                <button
+                                                    type="button"
+                                                    class="action-button"
+                                                    (click)="editLaborItem(laborItem)">
+                                                    Szerkesztés
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="delete-button"
+                                                    (click)="deleteLaborItem(laborItem.id)">
+                                                    Törlés
+                                                </button>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                } @else if (!showLaborForm) {
+
+                    <div class="empty-labor">
+
+                        Ehhez a munkalaphoz még nincs
+                        rögzített munkadíj.
 
                     </div>
 

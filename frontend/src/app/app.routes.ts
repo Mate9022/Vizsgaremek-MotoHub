@@ -1,25 +1,54 @@
 import { Routes } from '@angular/router';
 
+import { Home } from './pages/home/home';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Customers } from './pages/customers/customers';
 import { Motorcycles } from './pages/motorcycles/motorcycles';
 import { WorkOrders } from './pages/work-orders/work-orders';
 
+import { AdminLayout } from './layouts/admin-layout/admin-layout';
+
+import { Login } from './pages/login/login';
+
+import { authGuard } from './guards/auth-guard';
+
 export const routes: Routes = [
+
+    // Publikus főoldal
     {
         path: '',
-        component: Dashboard
+        component: Home
     },
+
+    // Admin bejelentkezés
     {
-        path: 'customers',
-        component: Customers
+        path: 'login',
+        component: Login
     },
+
+    // Védett admin felület
     {
-        path: 'motorcycles',
-        component: Motorcycles
-    },
-    {
-        path: 'work-orders',
-        component: WorkOrders
+        path: 'admin',
+        component: AdminLayout,
+        canActivate: [authGuard],
+        children: [
+            {
+                path: '',
+                component: Dashboard
+            },
+            {
+                path: 'customers',
+                component: Customers
+            },
+            {
+                path: 'motorcycles',
+                component: Motorcycles
+            },
+            {
+                path: 'work-orders',
+                component: WorkOrders
+            }
+        ]
     }
+
 ];

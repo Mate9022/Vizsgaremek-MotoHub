@@ -1,0 +1,100 @@
+<div class="login-page">
+
+    <div class="login-card">
+
+        <a routerLink="/" class="logo">
+            <span class="logo-icon">🏍</span>
+            <span>Moto<span>Hub</span></span>
+        </a>
+
+        <div class="login-header">
+
+            <h1>
+                Admin bejelentkezés
+            </h1>
+
+            <p>
+                Jelentkezz be a MotoHub adminisztrációs felületére.
+            </p>
+
+        </div>
+
+
+        <form
+            class="login-form"
+            (submit)="
+                login(
+                    username.value,
+                    password.value
+                );
+                $event.preventDefault()
+            "
+        >
+
+            <div class="form-group">
+
+                <label for="username">
+                    Felhasználónév
+                </label>
+
+                <input
+                    #username
+                    id="username"
+                    type="text"
+                    placeholder="admin"
+                    autocomplete="username"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Jelszó
+                </label>
+
+                <input
+                    #password
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            @if (errorMessage) {
+
+                <div class="error-message">
+                    {{ errorMessage }}
+                </div>
+
+            }
+
+
+            <button
+                type="submit"
+                class="login-submit"
+                [disabled]="isLoading"
+            >
+                {{ isLoading
+                    ? 'Bejelentkezés...'
+                    : 'Bejelentkezés'
+                }}
+            </button>
+
+        </form>
+
+
+        <a
+            routerLink="/"
+            class="back-link"
+        >
+            ← Vissza a főoldalra
+        </a>
+
+    </div>
+
+</div>

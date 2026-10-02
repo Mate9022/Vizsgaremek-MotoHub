@@ -8,6 +8,8 @@ const workOrderRoutes = require('./routes/workOrderRoutes');
 const laborItemRoutes = require('./routes/laborItemRoutes');
 const partItemRoutes = require('./routes/partItemRoutes');
 
+const authRoutes = require('./routes/authRoutes');
+
 const app = express();
 
 app.use(cors());
@@ -26,6 +28,8 @@ app.use('/api/motorcycles', motorcycleRoutes);
 app.use('/api/work-orders', workOrderRoutes);
 app.use('/api/labor-items', laborItemRoutes);
 app.use('/api/part-items', partItemRoutes);
+
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`MotoHub backend elindult a ${PORT} porton.`);

@@ -1,6 +1,15 @@
 const db = require('./database');
 
 db.exec(`
+    CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+`);
+
+db.exec(`
     CREATE TABLE IF NOT EXISTS customers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -23,7 +32,8 @@ db.exec(`
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-        FOREIGN KEY (customer_id) REFERENCES customers(id)
+        FOREIGN KEY (customer_id)
+            REFERENCES customers(id)
     )
 `);
 
@@ -36,7 +46,8 @@ db.exec(`
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-        FOREIGN KEY (motorcycle_id) REFERENCES motorcycles(id)
+        FOREIGN KEY (motorcycle_id)
+            REFERENCES motorcycles(id)
     )
 `);
 
@@ -48,7 +59,10 @@ db.exec(`
         hours REAL NOT NULL,
         hourly_rate REAL NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (work_order_id) REFERENCES work_orders(id)
+
+        FOREIGN KEY (work_order_id)
+            REFERENCES work_orders(id)
+            ON DELETE CASCADE
     )
 `);
 
@@ -60,7 +74,10 @@ db.exec(`
         quantity REAL NOT NULL,
         unit_price REAL NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (work_order_id) REFERENCES work_orders(id)
+
+        FOREIGN KEY (work_order_id)
+            REFERENCES work_orders(id)
+            ON DELETE CASCADE
     )
 `);
 

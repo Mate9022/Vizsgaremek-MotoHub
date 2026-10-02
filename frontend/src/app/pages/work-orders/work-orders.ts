@@ -11,6 +11,9 @@ import { Motorcycle } from '../../models/motorcycle';
 import { PartItemService } from '../../services/part-item';
 import { PartItem } from '../../models/part-item';
 
+import { LaborItemService } from '../../services/labor-item';
+import { LaborItem } from '../../models/labor-item';
+
 interface WorkOrderWithMotorcycle extends WorkOrder {
     motorcycleName: string;
 }
@@ -31,6 +34,11 @@ export class WorkOrders implements OnInit {
     showPartForm = false;
     editingPartItem = signal<PartItem | null>(null);
 
+    laborItems = signal<LaborItem[]>([]);
+
+    showLaborForm = false;
+    editingLaborItem = signal<LaborItem | null>(null);
+
     showForm = false;
     editMode = false;
 
@@ -47,7 +55,8 @@ export class WorkOrders implements OnInit {
     constructor(
         private workOrderService: WorkOrderService,
         private motorcycleService: MotorcycleService,
-        private partItemService: PartItemService
+        private partItemService: PartItemService,
+        private laborItemService: LaborItemService
     ) {
     }
 
@@ -118,6 +127,10 @@ export class WorkOrders implements OnInit {
         this.editingPartItem.set(null);
         this.showPartForm = false;
 
+        this.editingLaborItem.set(null);
+        this.showLaborForm = false;
+        this.laborItems.set([]);
+
         this.partItemService
             .getPartItemsByWorkOrder(workOrder.id)
             .subscribe({
@@ -141,6 +154,34 @@ export class WorkOrders implements OnInit {
                     );
 
                     this.partItems.set([]);
+
+                }
+
+            });
+
+        this.laborItemService
+            .getLaborItemsByWorkOrder(workOrder.id)
+            .subscribe({
+
+                next: data => {
+
+                    console.log(
+                        'Munkalap munkadíjai:',
+                        data
+                    );
+
+                    this.laborItems.set(data);
+
+                },
+
+                error: (error: HttpErrorResponse) => {
+
+                    console.error(
+                        'Hiba a munkadíjak lekérésekor:',
+                        error
+                    );
+
+                    this.laborItems.set([]);
 
                 }
 
@@ -514,12 +555,12 @@ export class WorkOrders implements OnInit {
         }
 
         this.partItemService.updatePartItem(
-    partItem.id,
-    partItem.work_order_id,
-    name.trim(),
-    quantityNumber,
-    unitPriceNumber
-).subscribe({
+            partItem.id,
+            partItem.work_order_id,
+            name.trim(),
+            quantityNumber,
+            unitPriceNumber
+        ).subscribe({
 
             next: updatedPartItem => {
 
@@ -561,6 +602,221 @@ export class WorkOrders implements OnInit {
         });
 
     }
+
+    addLaborItem(
+    description: string,
+    hours: string,
+    hourlyRate: string,
+    form: HTMLFormElement
+) {
+
+    const workOrder = this.selectedWorkOrder();
+
+    if (!workOrder) {
+        return;
+    }
+
+    const hoursNumber = Number(hours);
+    const hourlyRateNumber = Number(hourlyRate);
+
+    if (!description.trim()) {
+        alert('A munkadíj leírása kötelező.');
+        return;
+    }
+
+    if (!hoursNumber || hoursNumber <= 0) {
+        alert('Az óraszámnak pozitív számnak kell lennie.');
+        return;
+    }
+
+    if (!hourlyRateNumber || hourlyRateNumber <= 0) {
+        alert('Az óradíjnak pozitív számnak kell lennie.');
+        return;
+    }
+
+    this.laborItemService.createLaborItem(
+        workOrder.id,
+        description.trim(),
+        hoursNumber,
+        hourlyRateNumber
+    ).subscribe({
+
+        next: newLaborItem => {
+
+            console.log(
+                'Új munkadíj hozzáadva:',
+                newLaborItem
+            );
+
+            this.laborItems.update(
+                laborItems => [
+                    newLaborItem,
+                    ...laborItems
+                ]
+            );
+
+            form.reset();
+
+            this.showLaborForm = false;
+            this.editingLaborItem.set(null);
+
+        },
+
+        error: (error: HttpErrorResponse) => {
+
+            console.error(
+                'Hiba a munkadíj hozzáadásakor:',
+                error
+            );
+
+            alert(
+                error.error?.message ||
+                'Hiba történt a munkadíj mentése közben.'
+            );
+
+        }
+
+    });
+
+}
+
+    editLaborItem(laborItem: LaborItem) {
+
+    this.editingLaborItem.set(laborItem);
+    this.showLaborForm = true;
+
+}
+
+    updateLaborItem(
+    description: string,
+    hours: string,
+    hourlyRate: string,
+    form: HTMLFormElement
+) {
+
+    const laborItem = this.editingLaborItem();
+
+    if (!laborItem) {
+        return;
+    }
+
+    const hoursNumber = Number(hours);
+    const hourlyRateNumber = Number(hourlyRate);
+
+    if (!description.trim()) {
+        alert('A munkadíj leírása kötelező.');
+        return;
+    }
+
+    if (!hoursNumber || hoursNumber <= 0) {
+        alert('Az óraszámnak pozitív számnak kell lennie.');
+        return;
+    }
+
+    if (!hourlyRateNumber || hourlyRateNumber <= 0) {
+        alert('Az óradíjnak pozitív számnak kell lennie.');
+        return;
+    }
+
+    this.laborItemService.updateLaborItem(
+        laborItem.id,
+        laborItem.work_order_id,
+        description.trim(),
+        hoursNumber,
+        hourlyRateNumber
+    ).subscribe({
+
+        next: updatedLaborItem => {
+
+            console.log(
+                'Munkadíj módosítva:',
+                updatedLaborItem
+            );
+
+            this.laborItems.update(
+                laborItems =>
+                    laborItems.map(item =>
+                        item.id === updatedLaborItem.id
+                            ? updatedLaborItem
+                            : item
+                    )
+            );
+
+            form.reset();
+
+            this.editingLaborItem.set(null);
+            this.showLaborForm = false;
+
+        },
+
+        error: (error: HttpErrorResponse) => {
+
+            console.error(
+                'Hiba a munkadíj módosításakor:',
+                error
+            );
+
+            alert(
+                error.error?.message ||
+                'Hiba történt a munkadíj módosítása közben.'
+            );
+
+        }
+
+    });
+
+}
+
+    deleteLaborItem(id: number) {
+
+    if (!confirm(
+        'Biztosan törölni szeretnéd ezt a munkadíjat?'
+    )) {
+        return;
+    }
+
+    this.laborItemService.deleteLaborItem(id).subscribe({
+
+        next: () => {
+
+            console.log(
+                'Munkadíj törölve:',
+                id
+            );
+
+            this.laborItems.update(
+                laborItems =>
+                    laborItems.filter(
+                        item => item.id !== id
+                    )
+            );
+
+            if (
+                this.editingLaborItem()?.id === id
+            ) {
+                this.editingLaborItem.set(null);
+                this.showLaborForm = false;
+            }
+
+        },
+
+        error: (error: HttpErrorResponse) => {
+
+            console.error(
+                'Hiba a munkadíj törlésekor:',
+                error
+            );
+
+            alert(
+                error.error?.message ||
+                'Hiba történt a munkadíj törlése közben.'
+            );
+
+        }
+
+    });
+
+}
 
     deletePartItem(id: number) {
 

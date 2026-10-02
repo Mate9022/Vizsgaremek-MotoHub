@@ -363,3 +363,13 @@ Content-Type: application/json
     "quantity": 1,
     "unitPrice": -15000
 }
+
+
+### Login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin123"
+}
