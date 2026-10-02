@@ -7,7 +7,25 @@ function getAllLaborItems(req, res) {
     res.json(laborItems);
 }
 
+function getLaborItemsByWorkOrder(req, res) {
+    const workOrderId = Number(req.params.workOrderId);
+
+    const workOrder = workOrderService.getWorkOrderById(workOrderId);
+
+    if (!workOrder) {
+        return res.status(404).json({
+            message: 'Munkalap nem található.'
+        });
+    }
+
+    const laborItems =
+        laborItemService.getLaborItemsByWorkOrder(workOrderId);
+
+    res.json(laborItems);
+}
+
 function createLaborItem(req, res) {
+
     const {
         workOrderId,
         description,
@@ -15,50 +33,62 @@ function createLaborItem(req, res) {
         hourlyRate
     } = req.body;
 
-    if (!workOrderId || !description || hours === undefined || hourlyRate === undefined) {
-    return res.status(400).json({
-        message: 'A munkalap, a leírás, a munkaóra és az óradíj megadása kötelező.'
-    });
-}
+    if (
+        !workOrderId ||
+        !description ||
+        hours === undefined ||
+        hourlyRate === undefined
+    ) {
+        return res.status(400).json({
+            message:
+                'A munkalap, a leírás, az óraszám és az óradíj megadása kötelező.'
+        });
+    }
 
-const workOrder = workOrderService.getWorkOrderById(workOrderId);
+    const workOrder =
+        workOrderService.getWorkOrderById(workOrderId);
 
-if (!workOrder) {
-    return res.status(404).json({
-        message: 'Munkalap nem található.'
-    });
-}
+    if (!workOrder) {
+        return res.status(404).json({
+            message: 'Munkalap nem található.'
+        });
+    }
 
-if (typeof hours !== 'number' || hours <= 0) {
-    return res.status(400).json({
-        message: 'A munkaórának pozitív számnak kell lennie.'
-    });
-}
+    if (typeof hours !== 'number' || hours <= 0) {
+        return res.status(400).json({
+            message:
+                'Az óraszámnak pozitív számnak kell lennie.'
+        });
+    }
 
-if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
-    return res.status(400).json({
-        message: 'Az óradíjnak pozitív számnak kell lennie.'
-    });
-}
+    if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
+        return res.status(400).json({
+            message:
+                'Az óradíjnak pozitív számnak kell lennie.'
+        });
+    }
 
-const laborItem = laborItemService.createLaborItem(
-    workOrderId,
-    description,
-    hours,
-    hourlyRate
-);
+    const laborItem =
+        laborItemService.createLaborItem(
+            workOrderId,
+            description.trim(),
+            hours,
+            hourlyRate
+        );
 
     res.status(201).json(laborItem);
 }
 
 function getLaborItemById(req, res) {
+
     const id = Number(req.params.id);
 
-    const laborItem = laborItemService.getLaborItemById(id);
+    const laborItem =
+        laborItemService.getLaborItemById(id);
 
     if (!laborItem) {
         return res.status(404).json({
-            message: 'Munkadíj tétel nem található.'
+            message: 'Munkadíjtétel nem található.'
         });
     }
 
@@ -66,6 +96,7 @@ function getLaborItemById(req, res) {
 }
 
 function updateLaborItem(req, res) {
+
     const id = Number(req.params.id);
 
     const {
@@ -75,43 +106,53 @@ function updateLaborItem(req, res) {
         hourlyRate
     } = req.body;
 
-    if (!workOrderId || !description || hours === undefined || hourlyRate === undefined) {
+    if (
+        !workOrderId ||
+        !description ||
+        hours === undefined ||
+        hourlyRate === undefined
+    ) {
         return res.status(400).json({
-            message: 'A munkalap, a leírás, a munkaóra és az óradíj megadása kötelező.'
+            message:
+                'A munkalap, a leírás, az óraszám és az óradíj megadása kötelező.'
         });
     }
 
-    const workOrder = workOrderService.getWorkOrderById(workOrderId);
+    const workOrder =
+        workOrderService.getWorkOrderById(workOrderId);
 
-if (!workOrder) {
-    return res.status(404).json({
-        message: 'Munkalap nem található.'
-    });
-}
+    if (!workOrder) {
+        return res.status(404).json({
+            message: 'Munkalap nem található.'
+        });
+    }
 
-if (typeof hours !== 'number' || hours <= 0) {
-    return res.status(400).json({
-        message: 'A munkaórának pozitív számnak kell lennie.'
-    });
-}
+    if (typeof hours !== 'number' || hours <= 0) {
+        return res.status(400).json({
+            message:
+                'Az óraszámnak pozitív számnak kell lennie.'
+        });
+    }
 
-if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
-    return res.status(400).json({
-        message: 'Az óradíjnak pozitív számnak kell lennie.'
-    });
-}
+    if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
+        return res.status(400).json({
+            message:
+                'Az óradíjnak pozitív számnak kell lennie.'
+        });
+    }
 
-    const laborItem = laborItemService.updateLaborItem(
-        id,
-        workOrderId,
-        description,
-        hours,
-        hourlyRate
-    );
+    const laborItem =
+        laborItemService.updateLaborItem(
+            id,
+            workOrderId,
+            description.trim(),
+            hours,
+            hourlyRate
+        );
 
     if (!laborItem) {
         return res.status(404).json({
-            message: 'Munkadíj tétel nem található.'
+            message: 'Munkadíjtétel nem található.'
         });
     }
 
@@ -119,13 +160,15 @@ if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
 }
 
 function deleteLaborItem(req, res) {
+
     const id = Number(req.params.id);
 
-    const deleted = laborItemService.deleteLaborItem(id);
+    const deleted =
+        laborItemService.deleteLaborItem(id);
 
     if (!deleted) {
         return res.status(404).json({
-            message: 'Munkadíj tétel nem található.'
+            message: 'Munkadíjtétel nem található.'
         });
     }
 
@@ -134,6 +177,7 @@ function deleteLaborItem(req, res) {
 
 module.exports = {
     getAllLaborItems,
+    getLaborItemsByWorkOrder,
     createLaborItem,
     getLaborItemById,
     updateLaborItem,

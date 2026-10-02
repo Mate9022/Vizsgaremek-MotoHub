@@ -11,6 +11,22 @@ function getAllLaborItems() {
     }));
 }
 
+function getLaborItemsByWorkOrder(workOrderId) {
+    const laborItems = db
+        .prepare(`
+            SELECT *
+            FROM labor_items
+            WHERE work_order_id = ?
+            ORDER BY id DESC
+        `)
+        .all(workOrderId);
+
+    return laborItems.map(laborItem => ({
+        ...laborItem,
+        total_price: laborItem.hours * laborItem.hourly_rate
+    }));
+}
+
 function getLaborItemById(id) {
     const laborItem = db
         .prepare('SELECT * FROM labor_items WHERE id = ?')
@@ -97,6 +113,7 @@ function deleteLaborItem(id) {
 
 module.exports = {
     getAllLaborItems,
+    getLaborItemsByWorkOrder,
     getLaborItemById,
     createLaborItem,
     updateLaborItem,
