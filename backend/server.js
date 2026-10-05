@@ -9,6 +9,7 @@ const laborItemRoutes = require('./routes/laborItemRoutes');
 const partItemRoutes = require('./routes/partItemRoutes');
 
 const authRoutes = require('./routes/authRoutes');
+const authMiddleware = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -23,13 +24,39 @@ app.get('/api', (req, res) => {
     });
 });
 
-app.use('/api/customers', customerRoutes);
-app.use('/api/motorcycles', motorcycleRoutes);
-app.use('/api/work-orders', workOrderRoutes);
-app.use('/api/labor-items', laborItemRoutes);
-app.use('/api/part-items', partItemRoutes);
-
+// Bejelentkezés - nincs szükség tokenre
 app.use('/api/auth', authRoutes);
+
+// Admin API-k - JWT szükséges
+app.use(
+    '/api/customers',
+    authMiddleware,
+    customerRoutes
+);
+
+app.use(
+    '/api/motorcycles',
+    authMiddleware,
+    motorcycleRoutes
+);
+
+app.use(
+    '/api/work-orders',
+    authMiddleware,
+    workOrderRoutes
+);
+
+app.use(
+    '/api/labor-items',
+    authMiddleware,
+    laborItemRoutes
+);
+
+app.use(
+    '/api/part-items',
+    authMiddleware,
+    partItemRoutes
+);
 
 app.listen(PORT, () => {
     console.log(`MotoHub backend elindult a ${PORT} porton.`);
