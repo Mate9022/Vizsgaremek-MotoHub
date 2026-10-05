@@ -9,10 +9,7 @@
 
         <button
             class="add-button"
-            (click)="
-                showForm = !showForm;
-                editMode = false;
-            ">
+            (click)="startNewWorkOrder()">
             + Új munkalap
         </button>
 
@@ -261,6 +258,11 @@
                         {{ selectedWorkOrder()!.motorcycleName }}
                     </strong>
 
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Tulajdonos</span>
+                    <strong>{{ selectedWorkOrder()!.ownerName }}</strong>
                 </div>
 
 
@@ -819,6 +821,12 @@
 
             </div>
 
+            <section class="totals-card" aria-label="Munkalap összesítő">
+                <div><span>Munkadíj</span><strong>{{ formatMoney(laborTotal()) }} Ft</strong></div>
+                <div><span>Alkatrészek</span><strong>{{ formatMoney(partTotal()) }} Ft</strong></div>
+                <div class="grand-total"><span>Végösszeg</span><strong>{{ formatMoney(workOrderTotal()) }} Ft</strong></div>
+            </section>
+
         </div>
 
     }
@@ -834,10 +842,29 @@
                 Munkalapok
             </h2>
 
-            <span>
-                {{ workOrders().length }} munkalap
-            </span>
+            <span>{{ filteredWorkOrders().length }} / {{ workOrders().length }} munkalap</span>
 
+        </div>
+
+        <div class="work-order-filters">
+            <input
+                #workOrderSearch
+                type="search"
+                placeholder="Keresés azonosító, motor, tulajdonos vagy leírás alapján"
+                aria-label="Munkalapok keresése"
+                [value]="searchTerm"
+                (input)="searchTerm = workOrderSearch.value">
+            <select
+                aria-label="Szűrés státusz szerint"
+                [value]="selectedStatus"
+                (change)="selectedStatus = $any($event.target).value">
+                <option value="">Minden státusz</option>
+                <option value="OPEN">Nyitott</option>
+                <option value="IN_PROGRESS">Folyamatban</option>
+                <option value="WAITING_PARTS">Alkatrészre vár</option>
+                <option value="READY_FOR_PICKUP">Átadásra kész</option>
+                <option value="COMPLETED">Befejezve</option>
+            </select>
         </div>
 
 
@@ -850,6 +877,7 @@
                     <tr>
                         <th>Azonosító</th>
                         <th>Motorkerékpár</th>
+                        <th>Tulajdonos</th>
                         <th>Leírás</th>
                         <th>Státusz</th>
                         <th>Létrehozva</th>
@@ -862,7 +890,7 @@
                 <tbody>
 
                     @for (
-                        workOrder of workOrders();
+                        workOrder of filteredWorkOrders();
                         track workOrder.id
                     ) {
 
@@ -878,6 +906,8 @@
                             <td>
                                 {{ workOrder.motorcycleName }}
                             </td>
+
+                            <td>{{ workOrder.ownerName }}</td>
 
 
                             <td>

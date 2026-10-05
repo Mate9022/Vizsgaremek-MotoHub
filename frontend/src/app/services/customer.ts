@@ -10,23 +10,66 @@ export class CustomerService {
 
     private apiUrl = 'http://localhost:3000/api/customers';
 
-    constructor(private http: HttpClient) {
+    constructor(
+        private http: HttpClient
+    ) {
     }
+
 
     getAllCustomers() {
-        return this.http.get<Customer[]>(this.apiUrl);
+
+        return this.http.get<Customer[]>(
+            this.apiUrl
+        );
+
     }
 
-    createCustomer(name: string, phone: string, email: string) {
-        return this.http.post<Customer>(this.apiUrl, {
-            name,
-            phone,
-            email
-        });
+
+    createCustomer(
+        name: string,
+        phone: string,
+        email: string
+    ) {
+
+        return this.http.post<Customer>(
+            this.apiUrl,
+            {
+                name,
+                phone,
+                email
+            }
+        );
+
     }
 
-    deleteCustomer(id: number) {
-        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+
+    updateCustomer(
+        id: number,
+        name: string,
+        phone: string,
+        email: string
+    ) {
+
+        return this.http.put<Customer>(
+            `${this.apiUrl}/${id}`,
+            {
+                name,
+                phone,
+                email
+            }
+        );
+
+    }
+
+
+    deleteCustomer(
+        id: number
+    ) {
+
+        return this.http.delete<void>(
+            `${this.apiUrl}/${id}`
+        );
+
     }
 
 }

@@ -8,9 +8,11 @@ import { CustomerService } from '../../services/customer';
 import { Motorcycle } from '../../models/motorcycle';
 import { Customer } from '../../models/customer';
 
+
 interface MotorcycleWithOwner extends Motorcycle {
     customerName: string;
 }
+
 
 @Component({
     imports: [],
@@ -22,10 +24,17 @@ export class Motorcycles implements OnInit {
 
     showForm = false;
 
-    editingMotorcycle = signal<MotorcycleWithOwner | null>(null);
+    editingMotorcycle =
+        signal<MotorcycleWithOwner | null>(null);
 
-    motorcycles = signal<MotorcycleWithOwner[]>([]);
-    customers = signal<Customer[]>([]);
+    motorcycles =
+        signal<MotorcycleWithOwner[]>([]);
+
+    customers =
+        signal<Customer[]>([]);
+
+    selectedCustomerId = '';
+
 
     constructor(
         private motorcycleService: MotorcycleService,
@@ -33,68 +42,114 @@ export class Motorcycles implements OnInit {
     ) {
     }
 
+
     ngOnInit() {
-        console.log('Motorkerékpárok oldal betöltődött');
+
+        console.log(
+            'Motorkerékpárok oldal betöltődött'
+        );
 
         this.loadMotorcycles();
         this.loadCustomers();
+
     }
+
 
     loadCustomers() {
 
-        this.customerService.getAllCustomers().subscribe({
-            next: data => {
+        this.customerService
+            .getAllCustomers()
+            .subscribe({
 
-                console.log('Betöltött ügyfelek:', data);
+                next: data => {
 
-                this.customers.set(data);
-            },
+                    console.log(
+                        'Betöltött ügyfelek:',
+                        data
+                    );
 
-            error: (error: HttpErrorResponse) => {
+                    this.customers.set(data);
 
-                console.error(
-                    'Hiba az ügyfelek lekérésekor:',
-                    error
-                );
+                },
 
-            }
-        });
+                error: (error: HttpErrorResponse) => {
+
+                    console.error(
+                        'Hiba az ügyfelek lekérésekor:',
+                        error
+                    );
+
+                }
+
+            });
 
     }
+
 
     loadMotorcycles() {
 
         forkJoin({
-            motorcycles: this.motorcycleService.getAllMotorcycles(),
-            customers: this.customerService.getAllCustomers()
+
+            motorcycles:
+                this.motorcycleService
+                    .getAllMotorcycles(),
+
+            customers:
+                this.customerService
+                    .getAllCustomers()
+
         }).subscribe({
 
             next: data => {
 
-                const motorcycles = data.motorcycles;
-                const customers = data.customers;
+                const motorcycles =
+                    data.motorcycles;
 
-                const motorcyclesWithOwners = motorcycles.map(motorcycle => {
+                const customers =
+                    data.customers;
 
-                    const owner = customers.find(
-                        customer => customer.id === motorcycle.customer_id
+
+                const motorcyclesWithOwners =
+                    motorcycles.map(
+                        motorcycle => {
+
+                            const owner =
+                                customers.find(
+                                    customer =>
+                                        customer.id ===
+                                        motorcycle.customer_id
+                                );
+
+
+                            return {
+
+                                ...motorcycle,
+
+                                customerName:
+                                    owner
+                                        ? owner.name
+                                        : 'Ismeretlen tulajdonos'
+
+                            };
+
+                        }
                     );
 
-                    return {
-                        ...motorcycle,
-                        customerName: owner
-                            ? owner.name
-                            : 'Ismeretlen tulajdonos'
-                    };
-
-                });
 
                 console.log(
                     'Motorkerékpárok tulajdonosokkal:',
                     motorcyclesWithOwners
                 );
 
-                this.motorcycles.set(motorcyclesWithOwners);
+
+                this.customers.set(
+                    customers
+                );
+
+                this.motorcycles.set(
+                    motorcyclesWithOwners
+                );
+
             },
 
             error: (error: HttpErrorResponse) => {
@@ -110,7 +165,8 @@ export class Motorcycles implements OnInit {
 
     }
 
-        createMotorcycle(
+
+    createMotorcycle(
         customerId: string,
         brand: string,
         model: string,
@@ -120,194 +176,402 @@ export class Motorcycles implements OnInit {
         form: HTMLFormElement
     ) {
 
-        const customerIdNumber = Number(customerId);
+        const customerIdNumber =
+            Number(customerId);
 
-        const modelYearNumber = modelYear
-            ? Number(modelYear)
-            : null;
 
-        this.motorcycleService.createMotorcycle(
-            customerIdNumber,
-            brand.trim(),
-            model.trim(),
-            modelYearNumber,
-            licensePlate.trim(),
-            vin.trim()
-        ).subscribe({
+        const modelYearNumber =
+            modelYear
+                ? Number(modelYear)
+                : null;
 
-            next: newMotorcycle => {
 
-                console.log(
-                    'Új motorkerékpár létrehozva:',
-                    newMotorcycle
-                );
+        if (!customerIdNumber) {
 
-                const owner = this.customers().find(
-                    customer => customer.id === newMotorcycle.customer_id
-                );
+            alert(
+                'A tulajdonos kiválasztása kötelező.'
+            );
 
-                const motorcycleWithOwner: MotorcycleWithOwner = {
-                    ...newMotorcycle,
-                    customerName: owner
-                        ? owner.name
-                        : 'Ismeretlen tulajdonos'
-                };
+            return;
 
-                this.motorcycles.update(
-                    motorcycles => [
-                        motorcycleWithOwner,
-                        ...motorcycles
-                    ]
-                );
+        }
 
-                form.reset();
 
-                this.showForm = false;
-            },
+        if (!brand.trim()) {
 
-            error: (error: HttpErrorResponse) => {
+            alert(
+                'A márka megadása kötelező.'
+            );
 
-                console.error(
-                    'Hiba a motorkerékpár létrehozásakor:',
-                    error
-                );
+            return;
 
-                alert(
-                    error.error?.message ||
-                    'Hiba történt a motorkerékpár mentése közben.'
-                );
+        }
 
-            }
 
-        });
+        if (!model.trim()) {
+
+            alert(
+                'A modell megadása kötelező.'
+            );
+
+            return;
+
+        }
+
+
+        this.motorcycleService
+            .createMotorcycle(
+
+                customerIdNumber,
+
+                brand.trim(),
+
+                model.trim(),
+
+                modelYearNumber,
+
+                licensePlate.trim(),
+
+                vin.trim()
+
+            )
+            .subscribe({
+
+                next: newMotorcycle => {
+
+                    console.log(
+                        'Új motorkerékpár létrehozva:',
+                        newMotorcycle
+                    );
+
+
+                    const owner =
+                        this.customers().find(
+                            customer =>
+                                customer.id ===
+                                newMotorcycle.customer_id
+                        );
+
+
+                    const motorcycleWithOwner:
+                        MotorcycleWithOwner = {
+
+                        ...newMotorcycle,
+
+                        customerName:
+                            owner
+                                ? owner.name
+                                : 'Ismeretlen tulajdonos'
+
+                    };
+
+
+                    this.motorcycles.update(
+                        motorcycles => [
+
+                            motorcycleWithOwner,
+
+                            ...motorcycles
+
+                        ]
+                    );
+
+
+                    form.reset();
+
+                    this.selectedCustomerId = '';
+
+                    this.editingMotorcycle.set(
+                        null
+                    );
+
+                    this.showForm = false;
+
+                },
+
+                error: (error: HttpErrorResponse) => {
+
+                    console.error(
+                        'Hiba a motorkerékpár létrehozásakor:',
+                        error
+                    );
+
+
+                    alert(
+                        error.error?.message ||
+                        'Hiba történt a motorkerékpár mentése közben.'
+                    );
+
+                }
+
+            });
 
     }
+
 
     deleteMotorcycle(id: number) {
 
-        if (!confirm('Biztosan törölni szeretnéd ezt a motorkerékpárt?')) {
+        if (
+            !confirm(
+                'Biztosan törölni szeretnéd ezt a motorkerékpárt?'
+            )
+        ) {
+
             return;
+
         }
 
-        this.motorcycleService.deleteMotorcycle(id).subscribe({
 
-            next: () => {
+        this.motorcycleService
+            .deleteMotorcycle(id)
+            .subscribe({
 
-                console.log(
-                    'Motorkerékpár törölve:',
-                    id
-                );
+                next: () => {
 
-                this.motorcycles.update(
-                    motorcycles =>
-                        motorcycles.filter(
-                            motorcycle => motorcycle.id !== id
-                        )
-                );
+                    console.log(
+                        'Motorkerékpár törölve:',
+                        id
+                    );
 
-            },
 
-            error: (error: HttpErrorResponse) => {
+                    this.motorcycles.update(
+                        motorcycles =>
+                            motorcycles.filter(
+                                motorcycle =>
+                                    motorcycle.id !== id
+                            )
+                    );
 
-                console.error(
-                    'Hiba a motorkerékpár törlésekor:',
-                    error
-                );
+                },
 
-                alert(
-                    error.error?.message ||
-                    'Hiba történt a motorkerékpár törlése közben.'
-                );
+                error: (error: HttpErrorResponse) => {
 
-            }
+                    console.error(
+                        'Hiba a motorkerékpár törlésekor:',
+                        error
+                    );
 
-        });
+
+                    alert(
+                        error.error?.message ||
+                        'Hiba történt a motorkerékpár törlése közben.'
+                    );
+
+                }
+
+            });
 
     }
 
-    editMotorcycle(motorcycle: MotorcycleWithOwner) {
 
-    this.editingMotorcycle.set(motorcycle);
-    this.showForm = true;
+    editMotorcycle(
+        motorcycle: MotorcycleWithOwner
+    ) {
+
+        console.log(
+            'Szerkesztett motor:',
+            motorcycle
+        );
+
+
+        console.log(
+            'Tulajdonos ID:',
+            motorcycle.customer_id
+        );
+
+
+        this.editingMotorcycle.set(
+            motorcycle
+        );
+
+
+        this.selectedCustomerId =
+            String(
+                motorcycle.customer_id
+            );
+
+
+        this.showForm = true;
 
     }
+
+
+    isCustomerSelected(
+        customerId: number
+    ): boolean {
+
+        if (!this.editingMotorcycle()) {
+
+            return false;
+
+        }
+
+
+        return (
+            String(customerId) ===
+            this.selectedCustomerId
+        );
+
+    }
+
 
     saveMotorcycle(
-    customerId: string,
-    brand: string,
-    model: string,
-    modelYear: string,
-    licensePlate: string,
-    vin: string,
-    form: HTMLFormElement
-) {
+        customerId: string,
+        brand: string,
+        model: string,
+        modelYear: string,
+        licensePlate: string,
+        vin: string,
+        form: HTMLFormElement
+    ) {
 
-    const motorcycle = this.editingMotorcycle();
+        const motorcycle =
+            this.editingMotorcycle();
 
-    if (!motorcycle) {
-        return;
-    }
 
-    const customerIdNumber = Number(customerId);
+        if (!motorcycle) {
 
-    const modelYearNumber = modelYear
-        ? Number(modelYear)
-        : null;
-
-    this.motorcycleService.updateMotorcycle(
-        motorcycle.id,
-        customerIdNumber,
-        brand.trim(),
-        model.trim(),
-        modelYearNumber,
-        licensePlate.trim(),
-        vin.trim()
-    ).subscribe({
-
-        next: updatedMotorcycle => {
-
-            const owner = this.customers().find(
-                customer => customer.id === updatedMotorcycle.customer_id
-            );
-
-            const motorcycleWithOwner: MotorcycleWithOwner = {
-                ...updatedMotorcycle,
-                customerName: owner
-                    ? owner.name
-                    : 'Ismeretlen tulajdonos'
-            };
-
-            this.motorcycles.update(
-                motorcycles =>
-                    motorcycles.map(motorcycle =>
-                        motorcycle.id === updatedMotorcycle.id
-                            ? motorcycleWithOwner
-                            : motorcycle
-                    )
-            );
-
-            form.reset();
-
-            this.editingMotorcycle.set(null);
-            this.showForm = false;
-
-        },
-
-        error: (error: HttpErrorResponse) => {
-
-            console.error(
-                'Hiba a motorkerékpár módosításakor:',
-                error
-            );
-
-            alert(
-                error.error?.message ||
-                'Hiba történt a motorkerékpár módosítása közben.'
-            );
+            return;
 
         }
 
-    });
+
+        const customerIdNumber =
+            Number(customerId);
+
+
+        const modelYearNumber =
+            modelYear
+                ? Number(modelYear)
+                : null;
+
+
+        if (!customerIdNumber) {
+
+            alert(
+                'A tulajdonos kiválasztása kötelező.'
+            );
+
+            return;
+
+        }
+
+
+        if (!brand.trim()) {
+
+            alert(
+                'A márka megadása kötelező.'
+            );
+
+            return;
+
+        }
+
+
+        if (!model.trim()) {
+
+            alert(
+                'A modell megadása kötelező.'
+            );
+
+            return;
+
+        }
+
+
+        this.motorcycleService
+            .updateMotorcycle(
+
+                motorcycle.id,
+
+                customerIdNumber,
+
+                brand.trim(),
+
+                model.trim(),
+
+                modelYearNumber,
+
+                licensePlate.trim(),
+
+                vin.trim()
+
+            )
+            .subscribe({
+
+                next: updatedMotorcycle => {
+
+                    console.log(
+                        'Motorkerékpár módosítva:',
+                        updatedMotorcycle
+                    );
+
+
+                    const owner =
+                        this.customers().find(
+                            customer =>
+                                customer.id ===
+                                updatedMotorcycle.customer_id
+                        );
+
+
+                    const motorcycleWithOwner:
+                        MotorcycleWithOwner = {
+
+                        ...updatedMotorcycle,
+
+                        customerName:
+                            owner
+                                ? owner.name
+                                : 'Ismeretlen tulajdonos'
+
+                    };
+
+
+                    this.motorcycles.update(
+                        motorcycles =>
+                            motorcycles.map(
+                                motorcycle =>
+                                    motorcycle.id ===
+                                    updatedMotorcycle.id
+                                        ? motorcycleWithOwner
+                                        : motorcycle
+                            )
+                    );
+
+
+                    form.reset();
+
+
+                    this.editingMotorcycle.set(
+                        null
+                    );
+
+
+                    this.selectedCustomerId =
+                        '';
+
+
+                    this.showForm = false;
+
+                },
+
+                error: (error: HttpErrorResponse) => {
+
+                    console.error(
+                        'Hiba a motorkerékpár módosításakor:',
+                        error
+                    );
+
+
+                    alert(
+                        error.error?.message ||
+                        'Hiba történt a motorkerékpár módosítása közben.'
+                    );
+
+                }
+
+            });
 
     }
 

@@ -7,6 +7,8 @@ import { WorkOrder } from '../../models/work-order';
 
 import { MotorcycleService } from '../../services/motorcycle';
 import { Motorcycle } from '../../models/motorcycle';
+import { CustomerService } from '../../services/customer';
+import { Customer } from '../../models/customer';
 
 import { PartItemService } from '../../services/part-item';
 import { PartItem } from '../../models/part-item';
@@ -16,6 +18,7 @@ import { LaborItem } from '../../models/labor-item';
 
 interface WorkOrderWithMotorcycle extends WorkOrder {
     motorcycleName: string;
+    ownerName: string;
 }
 
 @Component({
@@ -28,6 +31,9 @@ export class WorkOrders implements OnInit {
 
     workOrders = signal<WorkOrderWithMotorcycle[]>([]);
     motorcycles = signal<Motorcycle[]>([]);
+    customers = signal<Customer[]>([]);
+    searchTerm = '';
+    selectedStatus = '';
 
     partItems = signal<PartItem[]>([]);
 
@@ -55,6 +61,7 @@ export class WorkOrders implements OnInit {
     constructor(
         private workOrderService: WorkOrderService,
         private motorcycleService: MotorcycleService,
+        private customerService: CustomerService,
         private partItemService: PartItemService,
         private laborItemService: LaborItemService
     ) {
@@ -72,7 +79,8 @@ export class WorkOrders implements OnInit {
 
         forkJoin({
             workOrders: this.workOrderService.getAllWorkOrders(),
-            motorcycles: this.motorcycleService.getAllMotorcycles()
+            motorcycles: this.motorcycleService.getAllMotorcycles(),
+            customers: this.customerService.getAllCustomers()
         }).subscribe({
 
             next: data => {
@@ -84,13 +92,17 @@ export class WorkOrders implements OnInit {
                             motorcycle =>
                                 motorcycle.id === workOrder.motorcycle_id
                         );
+                        const owner = motorcycle
+                            ? data.customers.find(customer => customer.id === motorcycle.customer_id)
+                            : undefined;
 
                         return {
                             ...workOrder,
 
                             motorcycleName: motorcycle
                                 ? `${motorcycle.brand} ${motorcycle.model} (${motorcycle.license_plate || 'Nincs rendszám'})`
-                                : 'Ismeretlen motorkerékpár'
+                                : 'Ismeretlen motorkerékpár',
+                            ownerName: owner?.name || 'Ismeretlen tulajdonos'
                         };
 
                     }
@@ -102,6 +114,7 @@ export class WorkOrders implements OnInit {
                 );
 
                 this.motorcycles.set(data.motorcycles);
+                this.customers.set(data.customers);
 
                 this.workOrders.set(workOrdersWithMotorcycles);
 
@@ -118,6 +131,49 @@ export class WorkOrders implements OnInit {
 
         });
 
+    }
+
+    filteredWorkOrders() {
+        const search = this.searchTerm.trim().toLocaleLowerCase('hu');
+        return this.workOrders().filter(workOrder => {
+            const matchesSearch = !search || [
+                String(workOrder.id),
+                workOrder.motorcycleName,
+                workOrder.ownerName,
+                workOrder.description
+            ].some(value => value.toLocaleLowerCase('hu').includes(search));
+            return matchesSearch && (!this.selectedStatus || workOrder.status === this.selectedStatus);
+        });
+    }
+
+    laborTotal() {
+        return this.laborItems().reduce((total, item) => total + item.hours * item.hourly_rate, 0);
+    }
+
+    partTotal() {
+        return this.partItems().reduce((total, item) => total + item.quantity * item.unit_price, 0);
+    }
+
+    workOrderTotal() {
+        return this.laborTotal() + this.partTotal();
+    }
+
+    formatMoney(amount: number) {
+        return new Intl.NumberFormat('hu-HU', {
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    startNewWorkOrder() {
+        this.selectedWorkOrder.set(null);
+        this.partItems.set([]);
+        this.laborItems.set([]);
+        this.showPartForm = false;
+        this.showLaborForm = false;
+        this.editingPartItem.set(null);
+        this.editingLaborItem.set(null);
+        this.editMode = false;
+        this.showForm = true;
     }
 
     viewWorkOrder(workOrder: WorkOrderWithMotorcycle) {
@@ -304,6 +360,9 @@ export class WorkOrders implements OnInit {
                     motorcycle =>
                         motorcycle.id === updatedWorkOrder.motorcycle_id
                 );
+                const owner = motorcycle
+                    ? this.customers().find(customer => customer.id === motorcycle.customer_id)
+                    : undefined;
 
                 const workOrderWithMotorcycle:
                     WorkOrderWithMotorcycle = {
@@ -312,7 +371,8 @@ export class WorkOrders implements OnInit {
 
                     motorcycleName: motorcycle
                         ? `${motorcycle.brand} ${motorcycle.model} (${motorcycle.license_plate || 'Nincs rendszám'})`
-                        : 'Ismeretlen motorkerékpár'
+                        : 'Ismeretlen motorkerékpár',
+                    ownerName: owner?.name || 'Ismeretlen tulajdonos'
 
                 };
 
@@ -390,6 +450,9 @@ export class WorkOrders implements OnInit {
                     motorcycle =>
                         motorcycle.id === newWorkOrder.motorcycle_id
                 );
+                const owner = motorcycle
+                    ? this.customers().find(customer => customer.id === motorcycle.customer_id)
+                    : undefined;
 
                 const workOrderWithMotorcycle:
                     WorkOrderWithMotorcycle = {
@@ -398,7 +461,8 @@ export class WorkOrders implements OnInit {
 
                     motorcycleName: motorcycle
                         ? `${motorcycle.brand} ${motorcycle.model} (${motorcycle.license_plate || 'Nincs rendszám'})`
-                        : 'Ismeretlen motorkerékpár'
+                        : 'Ismeretlen motorkerékpár',
+                    ownerName: owner?.name || 'Ismeretlen tulajdonos'
 
                 };
 

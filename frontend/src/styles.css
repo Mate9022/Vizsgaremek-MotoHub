@@ -1,1 +1,66 @@
 /* You can add global styles to this file, and also import other style files */
+
+.work-orders-page .work-order-filters {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.work-orders-page .work-order-filters input,
+.work-orders-page .work-order-filters select {
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    color: #1f2937;
+    font: inherit;
+}
+
+.work-orders-page .work-order-filters input {
+    flex: 1;
+}
+
+.work-orders-page .totals-card {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 26px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.work-orders-page .totals-card > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.work-orders-page .totals-card span {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.work-orders-page .totals-card strong {
+    color: #1f2937;
+    font-size: 17px;
+}
+
+.work-orders-page .totals-card .grand-total strong {
+    color: #0066cc;
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .work-orders-page .work-order-filters {
+        flex-direction: column;
+        padding: 16px;
+    }
+
+    .work-orders-page .totals-card {
+        grid-template-columns: 1fr;
+    }
+}

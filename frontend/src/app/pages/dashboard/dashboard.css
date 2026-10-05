@@ -175,3 +175,65 @@
         text-align: center;
     }
 }
+
+.work-order-status {
+    margin-top: 30px;
+    padding: 28px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.work-order-status h2 {
+    margin: 0 0 20px;
+    color: #111827;
+    font-size: 22px;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+}
+
+.status-card {
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.status-label {
+    display: block;
+    margin-bottom: 10px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.status-card strong {
+    color: #0066cc;
+    font-size: 28px;
+}
+
+
+@media (max-width: 900px) {
+
+    .status-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .work-order-status {
+        padding: 20px;
+    }
+
+}

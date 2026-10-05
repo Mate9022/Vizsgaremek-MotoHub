@@ -31,13 +31,16 @@ export const authInterceptor: HttpInterceptorFn = (
 
         catchError((error: HttpErrorResponse) => {
 
-            if (error.status === 401) {
+            if (
+    error.status === 401 &&
+    !req.url.includes('/auth/login')
+) {
 
-                localStorage.removeItem('motohub_token');
+    localStorage.removeItem('motohub_token');
 
-                router.navigate(['/login']);
+    router.navigate(['/login']);
 
-            }
+}
 
             return throwError(() => error);
         })

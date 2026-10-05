@@ -1,25 +1,51 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import {
+    Component,
+    ChangeDetectorRef
+} from '@angular/core';
 
-import { AuthService } from '../../services/auth';
+import {
+    Router,
+    RouterLink
+} from '@angular/router';
+
+import {
+    HttpErrorResponse
+} from '@angular/common/http';
+
+import {
+    FormsModule
+} from '@angular/forms';
+
+import {
+    AuthService
+} from '../../services/auth';
 
 @Component({
     selector: 'app-login',
-    imports: [RouterLink],
+
+    imports: [
+        RouterLink,
+        FormsModule
+    ],
+
     templateUrl: './login.html',
+
     styleUrl: './login.css'
 })
 export class Login {
 
     errorMessage = '';
+
     isLoading = false;
+
 
     constructor(
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
     }
+
 
     login(
         username: string,
@@ -28,18 +54,30 @@ export class Login {
 
         this.errorMessage = '';
 
-        if (!username.trim() || !password) {
+
+        if (
+            !username.trim() ||
+            !password
+        ) {
+
             this.errorMessage =
                 'A felhasználónév és a jelszó megadása kötelező.';
+
             return;
         }
 
+
         this.isLoading = true;
 
+
         this.authService
-            .login(username.trim(), password)
+            .login(
+                username.trim(),
+                password
+            )
             .subscribe({
-                next: response => {
+
+                next: (response) => {
 
                     this.authService.saveToken(
                         response.token
@@ -47,8 +85,13 @@ export class Login {
 
                     this.isLoading = false;
 
-                    this.router.navigate(['/admin']);
+                    this.changeDetectorRef.detectChanges();
+
+                    this.router.navigate([
+                        '/admin'
+                    ]);
                 },
+
 
                 error: (error: HttpErrorResponse) => {
 
@@ -57,7 +100,10 @@ export class Login {
                     this.errorMessage =
                         error.error?.message ||
                         'Hiba történt a bejelentkezés során.';
+
+                    this.changeDetectorRef.detectChanges();
                 }
+
             });
     }
 }

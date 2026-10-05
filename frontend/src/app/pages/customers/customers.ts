@@ -1,77 +1,338 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { CustomerService } from '../../services/customer';
-import { Customer } from '../../models/customer';
+import {
+    Component,
+    OnInit,
+    signal
+} from '@angular/core';
+
+import {
+    FormsModule
+} from '@angular/forms';
+
+import {
+    CustomerService
+} from '../../services/customer';
+
+import {
+    Customer
+} from '../../models/customer';
+
 
 @Component({
-    imports: [],
+    imports: [
+        FormsModule
+    ],
+
     selector: 'app-customers',
+
     styleUrl: './customers.css',
+
     templateUrl: './customers.html',
 })
 export class Customers implements OnInit {
 
     showForm = false;
 
+    searchTerm = '';
+
     customers = signal<Customer[]>([]);
 
-    constructor(private customerService: CustomerService) {
+    editingCustomer = signal<Customer | null>(null);
+
+
+    constructor(
+        private customerService: CustomerService
+    ) {
     }
+
 
     ngOnInit() {
-        console.log('Customers oldal betöltődött');
+
         this.loadCustomers();
+
     }
+
 
     loadCustomers() {
-        this.customerService.getAllCustomers().subscribe(data => {
-            console.log('Kapott ügyfelek:', data);
-            this.customers.set(data);
-        });
+
+        this.customerService
+            .getAllCustomers()
+            .subscribe({
+
+                next: data => {
+
+                    this.customers.set(data);
+
+                },
+
+                error: error => {
+
+                    console.error(
+                        'Hiba az ügyfelek lekérésekor:',
+                        error
+                    );
+
+                    alert(
+                        'Hiba történt az ügyfelek betöltése közben.'
+                    );
+
+                }
+
+            });
+
     }
 
-    createCustomer(name: string, phone: string, email: string) {
 
-    if (!name.trim()) {
-        alert('A név megadása kötelező.');
-        return;
-    }
+    get filteredCustomers(): Customer[] {
 
-    this.customerService.createCustomer(name, phone, email).subscribe({
-        next: newCustomer => {
-            console.log('Új ügyfél létrehozva:', newCustomer);
+        const search = this.searchTerm
+            .trim()
+            .toLowerCase();
 
-            this.customers.update(customers => [newCustomer, ...customers]);
 
-            this.showForm = false;
-        },
-        error: error => {
-            console.error('Hiba az ügyfél létrehozásakor:', error);
-
-            alert('Hiba történt az ügyfél mentése közben.');
+        if (!search) {
+            return this.customers();
         }
-    });
-}
 
-deleteCustomer(id: number) {
 
-    if (!confirm('Biztosan törölni szeretnéd ezt az ügyfelet?')) {
-        return;
+        return this.customers().filter(
+            customer =>
+                customer.name
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                (customer.phone || '')
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                (customer.email || '')
+                    .toLowerCase()
+                    .includes(search)
+        );
+
     }
 
-    this.customerService.deleteCustomer(id).subscribe({
-        next: () => {
-            console.log('Ügyfél törölve:', id);
 
-            this.customers.update(customers =>
-                customers.filter(customer => customer.id !== id)
+    createCustomer(
+        name: string,
+        phone: string,
+        email: string
+    ) {
+
+        if (!name.trim()) {
+
+            alert(
+                'A név megadása kötelező.'
             );
-        },
-        error: error => {
-            console.error('Hiba az ügyfél törlésekor:', error);
 
-            alert('Hiba történt az ügyfél törlése közben.');
+            return;
+
         }
-    });
-}
+
+
+        this.customerService
+            .createCustomer(
+                name.trim(),
+                phone.trim(),
+                email.trim()
+            )
+            .subscribe({
+
+                next: newCustomer => {
+
+                    this.customers.update(
+                        customers => [
+                            newCustomer,
+                            ...customers
+                        ]
+                    );
+
+                    this.showForm = false;
+
+                },
+
+                error: error => {
+
+                    console.error(
+                        'Hiba az ügyfél létrehozásakor:',
+                        error
+                    );
+
+                    alert(
+                        error.error?.message ||
+                        'Hiba történt az ügyfél mentése közben.'
+                    );
+
+                }
+
+            });
+
+    }
+
+
+    editCustomer(
+        customer: Customer
+    ) {
+
+        this.editingCustomer.set(customer);
+
+        this.showForm = true;
+
+    }
+
+
+    updateCustomer(
+        name: string,
+        phone: string,
+        email: string
+    ) {
+
+        const customer =
+            this.editingCustomer();
+
+
+        if (!customer) {
+            return;
+        }
+
+
+        if (!name.trim()) {
+
+            alert(
+                'A név megadása kötelező.'
+            );
+
+            return;
+
+        }
+
+
+        this.customerService
+            .updateCustomer(
+                customer.id,
+                name.trim(),
+                phone.trim(),
+                email.trim()
+            )
+            .subscribe({
+
+                next: updatedCustomer => {
+
+                    this.customers.update(
+                        customers =>
+                            customers.map(
+                                item =>
+                                    item.id === updatedCustomer.id
+                                        ? updatedCustomer
+                                        : item
+                            )
+                    );
+
+                    this.editingCustomer.set(null);
+
+                    this.showForm = false;
+
+                },
+
+                error: error => {
+
+                    console.error(
+                        'Hiba az ügyfél módosításakor:',
+                        error
+                    );
+
+                    alert(
+                        error.error?.message ||
+                        'Hiba történt az ügyfél módosítása közben.'
+                    );
+
+                }
+
+            });
+
+    }
+
+
+    deleteCustomer(
+        id: number
+    ) {
+
+        const customer =
+            this.customers().find(
+                item => item.id === id
+            );
+
+
+        if (!customer) {
+            return;
+        }
+
+
+        if (
+            !confirm(
+                `Biztosan törölni szeretnéd a(z) "${customer.name}" ügyfelet?`
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        this.customerService
+            .deleteCustomer(id)
+            .subscribe({
+
+                next: () => {
+
+                    this.customers.update(
+                        customers =>
+                            customers.filter(
+                                item =>
+                                    item.id !== id
+                            )
+                    );
+
+                },
+
+                error: error => {
+
+                    console.error(
+                        'Hiba az ügyfél törlésekor:',
+                        error
+                    );
+
+                    alert(
+                        error.error?.message ||
+                        'Hiba történt az ügyfél törlése közben.'
+                    );
+
+                }
+
+            });
+
+    }
+
+
+    toggleForm() {
+
+        this.showForm =
+            !this.showForm;
+
+        this.editingCustomer.set(null);
+
+    }
+
+
+    cancelForm() {
+
+        this.showForm = false;
+
+        this.editingCustomer.set(null);
+
+    }
 
 }

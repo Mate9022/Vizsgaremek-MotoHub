@@ -1,59 +1,352 @@
 <div class="customers-page">
 
-    <h1>Ügyfelek</h1>
+    <!-- =========================
+         HEADER
+         ========================= -->
 
-    <p>Itt kezelhetjük a MotoHub ügyfeleit.</p>
+    <div class="page-header">
 
-    <button (click)="showForm = !showForm">
-        Új ügyfél
-    </button>
+        <div>
 
-    @if (showForm) {
-        <div class="customer-form">
+            <h1>
+                Ügyfelek
+            </h1>
 
-            <h2>Új ügyfél</h2>
-
-            <input
-                type="text"
-                placeholder="Név"
-                #nameInput
-                required
-            >
-
-            <input
-                type="text"
-                placeholder="Telefonszám"
-                #phoneInput
-            >
-
-            <input
-                type="email"
-                placeholder="E-mail"
-                #emailInput
-            >
-
-            <button
-                (click)="createCustomer(nameInput.value, phoneInput.value, emailInput.value)"
-            >
-                Mentés
-            </button>
+            <p>
+                A MotoHub ügyfeleinek kezelése.
+            </p>
 
         </div>
+
+
+        <button
+            class="add-button"
+            type="button"
+            (click)="toggleForm()"
+        >
+            + Új ügyfél
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         ÚJ ÜGYFÉL / SZERKESZTÉS
+         ========================= -->
+
+    @if (showForm) {
+
+        <div class="form-card">
+
+            <div class="form-header">
+
+                <div>
+
+                    <h2>
+                        {{ editingCustomer()
+                            ? 'Ügyfél szerkesztése'
+                            : 'Új ügyfél'
+                        }}
+                    </h2>
+
+                    <p>
+                        {{ editingCustomer()
+                            ? 'Az ügyfél adatainak módosítása.'
+                            : 'Új ügyfél rögzítése a rendszerbe.'
+                        }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                #customerForm
+                (submit)="
+                    editingCustomer()
+                        ? updateCustomer(
+                            nameInput.value,
+                            phoneInput.value,
+                            emailInput.value
+                        )
+                        : createCustomer(
+                            nameInput.value,
+                            phoneInput.value,
+                            emailInput.value
+                        );
+
+                    $event.preventDefault()
+                "
+            >
+
+                <div class="form-grid">
+
+                    <!-- NÉV -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Név *
+                        </label>
+
+                        <input
+                            #nameInput
+                            id="name"
+                            type="text"
+                            placeholder="Pl. Kovács Péter"
+                            [value]="editingCustomer()?.name || ''"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- TELEFONSZÁM -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Telefonszám
+                        </label>
+
+                        <input
+                            #phoneInput
+                            id="phone"
+                            type="text"
+                            placeholder="Pl. 06301234567"
+                            [value]="editingCustomer()?.phone || ''"
+                        >
+
+                    </div>
+
+
+                    <!-- E-MAIL -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            E-mail
+                        </label>
+
+                        <input
+                            #emailInput
+                            id="email"
+                            type="email"
+                            placeholder="Pl. pelda@email.com"
+                            [value]="editingCustomer()?.email || ''"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- GOMBOK -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        (click)="cancelForm()"
+                    >
+                        Mégse
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                    >
+                        {{ editingCustomer()
+                            ? 'Módosítás mentése'
+                            : 'Mentés'
+                        }}
+                    </button>
+
+                </div>
+
+
+                <div class="required-info">
+                    * Kötelező mező
+                </div>
+
+            </form>
+
+        </div>
+
     }
 
-    <h2>Ügyfelek listája</h2>
 
-    @for (customer of customers(); track customer.id) {
-    <p>
-        {{ customer.id }} -
-        {{ customer.name }} -
-        {{ customer.phone }} -
-        {{ customer.email }}
+    <!-- =========================
+         ÜGYFELEK LISTÁJA
+         ========================= -->
 
-        <button (click)="deleteCustomer(customer.id)">
-            Törlés
-        </button>
-    </p>
-}
+    <div class="table-card">
+
+
+        <!-- TABLE HEADER -->
+
+        <div class="table-header">
+
+            <div>
+
+                <h2>
+                    Ügyfelek
+                </h2>
+
+                <span>
+                    {{ filteredCustomers.length }}
+                    regisztrált ügyfél
+                </span>
+
+            </div>
+
+
+            <!-- KERESŐ -->
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    [(ngModel)]="searchTerm"
+                    placeholder="Ügyfél keresése..."
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Név
+                        </th>
+
+                        <th>
+                            Telefonszám
+                        </th>
+
+                        <th>
+                            E-mail
+                        </th>
+
+                        <th>
+                            Műveletek
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @for (
+                        customer of filteredCustomers;
+                        track customer.id
+                    ) {
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    #{{ customer.id }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ customer.name }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                {{ customer.phone || '-' }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ customer.email || '-' }}
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <!-- SZERKESZTÉS -->
+
+                                    <button
+                                        type="button"
+                                        class="action-button"
+                                        (click)="editCustomer(customer)"
+                                    >
+                                        Szerkesztés
+                                    </button>
+
+
+                                    <!-- TÖRLÉS -->
+
+                                    <button
+                                        type="button"
+                                        class="delete-button"
+                                        (click)="deleteCustomer(customer.id)"
+                                    >
+                                        Törlés
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
+
+            <!-- ÜRES ÁLLAPOT -->
+
+            @if (filteredCustomers.length === 0) {
+
+                <div class="empty-state">
+
+                    Nincs a keresésnek megfelelő ügyfél.
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
 
 </div>

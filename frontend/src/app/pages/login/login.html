@@ -21,15 +21,9 @@
 
 
         <form
-            class="login-form"
-            (submit)="
-                login(
-                    username.value,
-                    password.value
-                );
-                $event.preventDefault()
-            "
-        >
+    class="login-form"
+    (ngSubmit)="login(username.value, password.value)"
+>
 
             <div class="form-group">
 

@@ -393,3 +393,14 @@ Content-Type: application/json
     "username": "admin",
     "password": "admin123"
 }
+
+### Ügyfél módosítása
+PUT http://localhost:3000/api/customers/5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MTIxMDU2OSwiZXhwIjoxNzkxMjE3NzY5fQ.-MdAprmtmlQqHvSU7FX26Q05LAUCg00fi5nEWiJs_XU
+
+{
+    "name": "Teszt Elek Módosítva",
+    "phone": "06123456789",
+    "email": "modositott@example.com"
+}
