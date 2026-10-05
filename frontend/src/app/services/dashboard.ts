@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Customer } from '../models/customer';
+import { Motorcycle } from '../models/motorcycle';
+import { WorkOrder } from '../models/work-order';
 
 @Injectable({
     providedIn: 'root'
@@ -14,15 +17,15 @@ export class DashboardService {
     }
 
     getCustomerCount() {
-        return this.http.get<any[]>(this.customersUrl);
+        return this.http.get<Customer[]>(this.customersUrl);
     }
 
     getMotorcycleCount() {
-        return this.http.get<any[]>(this.motorcyclesUrl);
+        return this.http.get<Motorcycle[]>(this.motorcyclesUrl);
     }
 
     getWorkOrderCount() {
-        return this.http.get<any[]>(this.workOrdersUrl);
+        return this.http.get<WorkOrder[]>(this.workOrdersUrl);
     }
 
 }

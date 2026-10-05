@@ -1,5 +1,14 @@
 <div class="dashboard">
 
+    @if (loadError()) {
+        <div class="dashboard-error" role="alert">
+            <span>{{ loadError() }}</span>
+            <button type="button" (click)="loadDashboardData()" [disabled]="isLoading()">
+                Újrapróbálás
+            </button>
+        </div>
+    }
+
     <section class="hero">
 
         <h1>

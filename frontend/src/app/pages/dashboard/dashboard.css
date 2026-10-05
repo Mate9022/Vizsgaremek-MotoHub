@@ -1,20 +1,49 @@
 .dashboard {
     min-height: calc(100vh - 70px);
-    padding: 50px;
+    padding: 38px clamp(20px, 3vw, 48px) 48px;
     box-sizing: border-box;
     background: #f4f6f8;
+}
+
+.dashboard-error {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.dashboard-error button {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 7px;
+    background: #b91c1c;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+.dashboard-error button:disabled {
+    opacity: 0.65;
+    cursor: wait;
 }
 
 /* Felső üdvözlő rész */
 
 .hero {
     max-width: 1200px;
-    margin: 0 auto 40px;
+    margin: 0 auto 32px;
 }
 
 .hero h1 {
     margin: 0;
-    font-size: 42px;
+    font-size: clamp(30px, 3vw, 40px);
     font-weight: 700;
     color: #1a1a1a;
 }
@@ -29,15 +58,16 @@
 
 .stats {
     max-width: 1200px;
-    margin: 0 auto 45px;
+    margin: 0 auto 28px;
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 20px;
 }
 
 .stat-card {
-    padding: 28px;
+    padding: 24px;
+    box-sizing: border-box;
 
     background: white;
     border: 1px solid #e5e7eb;
@@ -61,7 +91,7 @@
 
     font-size: 17px;
     font-weight: 600;
-    color: #555;
+    color: #374151;
 }
 
 .stat-card strong {
@@ -87,7 +117,8 @@
     max-width: 1200px;
     margin: 0 auto;
 
-    padding: 30px;
+    padding: 24px;
+    box-sizing: border-box;
 
     background: white;
     border: 1px solid #e5e7eb;
@@ -177,8 +208,10 @@
 }
 
 .work-order-status {
-    margin-top: 30px;
-    padding: 28px;
+    max-width: 1200px;
+    box-sizing: border-box;
+    margin: 0 auto 28px;
+    padding: 24px;
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 15px;
@@ -199,9 +232,26 @@
 
 .status-card {
     padding: 20px;
+    border-top: 3px solid #f59e0b;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     background: #f8fafc;
+}
+
+.status-card:nth-child(2) {
+    border-top-color: #3b82f6;
+}
+
+.status-card:nth-child(3) {
+    border-top-color: #8b5cf6;
+}
+
+.status-card:nth-child(4) {
+    border-top-color: #10b981;
+}
+
+.status-card:nth-child(5) {
+    border-top-color: #64748b;
 }
 
 .status-label {

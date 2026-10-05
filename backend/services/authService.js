@@ -2,8 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const db = require('../database/database');
-
-const JWT_SECRET = 'motohub-secret-key';
+const { jwtSecret, jwtExpiresIn } = require('../config/auth');
 
 async function login(username, password) {
 
@@ -33,9 +32,10 @@ async function login(username, password) {
             id: admin.id,
             username: admin.username
         },
-        JWT_SECRET,
+        jwtSecret,
         {
-            expiresIn: '2h'
+            expiresIn: jwtExpiresIn,
+            algorithm: 'HS256'
         }
     );
 

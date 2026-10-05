@@ -7,24 +7,36 @@ async function login(req, res) {
         password
     } = req.body;
 
-    if (!username || !password) {
+    if (
+        typeof username !== 'string' ||
+        !username.trim() ||
+        typeof password !== 'string' ||
+        !password
+    ) {
         return res.status(400).json({
             message: 'A felhasználónév és a jelszó megadása kötelező.'
         });
     }
 
-    const result = await authService.login(
-        username,
-        password
-    );
+    try {
+        const result = await authService.login(
+            username.trim(),
+            password
+        );
 
-    if (!result) {
-        return res.status(401).json({
-            message: 'Hibás felhasználónév vagy jelszó.'
+        if (!result) {
+            return res.status(401).json({
+                message: 'Hibás felhasználónév vagy jelszó.'
+            });
+        }
+
+        return res.json(result);
+    } catch (error) {
+        console.error('Bejelentkezési hiba:', error);
+        return res.status(500).json({
+            message: 'Hiba történt a bejelentkezés során.'
         });
     }
-
-    res.json(result);
 }
 
 module.exports = {

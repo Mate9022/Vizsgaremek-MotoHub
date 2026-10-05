@@ -3,6 +3,8 @@ import {
     OnInit,
     signal
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 
 import {
     RouterLink
@@ -41,6 +43,10 @@ export class Dashboard implements OnInit {
 
     completedWorkOrderCount = signal(0);
 
+    isLoading = signal(true);
+
+    loadError = signal<string | null>(null);
+
 
     constructor(
         private dashboardService: DashboardService
@@ -56,79 +62,31 @@ export class Dashboard implements OnInit {
 
 
     loadDashboardData() {
+        this.isLoading.set(true);
+        this.loadError.set(null);
 
-        this.dashboardService
-            .getCustomerCount()
-            .subscribe(customers => {
-
-                this.customerCount.set(
-                    customers.length
-                );
-
-            });
-
-
-        this.dashboardService
-            .getMotorcycleCount()
-            .subscribe(motorcycles => {
-
-                this.motorcycleCount.set(
-                    motorcycles.length
-                );
-
-            });
-
-
-        this.dashboardService
-            .getWorkOrderCount()
-            .subscribe(workOrders => {
-
-                this.workOrderCount.set(
-                    workOrders.length
-                );
-
-
-                this.openWorkOrderCount.set(
-                    workOrders.filter(
-                        workOrder =>
-                            workOrder.status === 'OPEN'
-                    ).length
-                );
-
-
-                this.inProgressWorkOrderCount.set(
-                    workOrders.filter(
-                        workOrder =>
-                            workOrder.status === 'IN_PROGRESS'
-                    ).length
-                );
-
-
-                this.waitingPartsWorkOrderCount.set(
-                    workOrders.filter(
-                        workOrder =>
-                            workOrder.status === 'WAITING_PARTS'
-                    ).length
-                );
-
-
-                this.readyForPickupWorkOrderCount.set(
-                    workOrders.filter(
-                        workOrder =>
-                            workOrder.status === 'READY_FOR_PICKUP'
-                    ).length
-                );
-
-
-                this.completedWorkOrderCount.set(
-                    workOrders.filter(
-                        workOrder =>
-                            workOrder.status === 'COMPLETED'
-                    ).length
-                );
-
-            });
-
+        forkJoin({
+            customers: this.dashboardService.getCustomerCount(),
+            motorcycles: this.dashboardService.getMotorcycleCount(),
+            workOrders: this.dashboardService.getWorkOrderCount()
+        }).subscribe({
+            next: ({ customers, motorcycles, workOrders }) => {
+                this.customerCount.set(customers.length);
+                this.motorcycleCount.set(motorcycles.length);
+                this.workOrderCount.set(workOrders.length);
+                this.openWorkOrderCount.set(workOrders.filter(item => item.status === 'OPEN').length);
+                this.inProgressWorkOrderCount.set(workOrders.filter(item => item.status === 'IN_PROGRESS').length);
+                this.waitingPartsWorkOrderCount.set(workOrders.filter(item => item.status === 'WAITING_PARTS').length);
+                this.readyForPickupWorkOrderCount.set(workOrders.filter(item => item.status === 'READY_FOR_PICKUP').length);
+                this.completedWorkOrderCount.set(workOrders.filter(item => item.status === 'COMPLETED').length);
+                this.isLoading.set(false);
+            },
+            error: (error: HttpErrorResponse) => {
+                console.error('Hiba a Dashboard adatainak betöltésekor:', error);
+                this.loadError.set('A Dashboard adatai nem tölthetők be. Ellenőrizd a kapcsolatot, majd próbáld újra.');
+                this.isLoading.set(false);
+            }
+        });
     }
 
 }

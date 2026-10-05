@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-
-const JWT_SECRET = 'motohub-secret-key';
+const { jwtSecret } = require('../config/auth');
 
 function authMiddleware(req, res, next) {
 
@@ -12,19 +11,22 @@ function authMiddleware(req, res, next) {
         });
     }
 
-    if (!authHeader.startsWith('Bearer ')) {
+    const bearerMatch = authHeader.match(/^Bearer\s+(\S+)$/i);
+
+    if (!bearerMatch) {
         return res.status(401).json({
             message: 'Érvénytelen hitelesítési fejléc.'
         });
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = bearerMatch[1];
 
     try {
 
         const decoded = jwt.verify(
             token,
-            JWT_SECRET
+            jwtSecret,
+            { algorithms: ['HS256'] }
         );
 
         req.admin = decoded;
@@ -32,8 +34,15 @@ function authMiddleware(req, res, next) {
         next();
 
     } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                code: 'TOKEN_EXPIRED',
+                message: 'A munkamenet lejárt. Jelentkezz be újra.'
+            });
+        }
 
         return res.status(401).json({
+            code: 'INVALID_TOKEN',
             message: 'Érvénytelen vagy lejárt token.'
         });
 
