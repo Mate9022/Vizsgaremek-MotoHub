@@ -1,169 +1,77 @@
 const partItemService = require('../services/partItemService');
 const workOrderService = require('../services/workOrderService');
+const { isRecord, requiredText, positiveInteger, positiveNumber } = require('../utils/validation');
+
+function parseId(value) {
+    const id = Number(value);
+    return positiveInteger(id) ? id : null;
+}
+
+function validateBody(body) {
+    if (!isRecord(body) || !positiveInteger(Number(body.workOrderId)) || !requiredText(body.name, 160)) {
+        return 'Érvényes munkalap és alkatrésznév megadása kötelező.';
+    }
+    if (!positiveNumber(body.quantity) || !positiveNumber(body.unitPrice)) {
+        return 'A mennyiségnek és az egységárnak pozitív, véges számnak kell lennie.';
+    }
+    return null;
+}
 
 function getAllPartItems(req, res) {
-    const partItems = partItemService.getAllPartItems();
-
-    res.json(partItems);
+    res.json(partItemService.getAllPartItems());
 }
 
 function getPartItemsByWorkOrder(req, res) {
-
-    const workOrderId = Number(req.params.workOrderId);
-
-    const workOrder = workOrderService.getWorkOrderById(workOrderId);
-
-    if (!workOrder) {
-        return res.status(404).json({
-            message: 'Munkalap nem található.'
-        });
+    const workOrderId = parseId(req.params.workOrderId);
+    if (!workOrderId) return res.status(400).json({ message: 'Érvénytelen munkalapazonosító.' });
+    if (!workOrderService.getWorkOrderById(workOrderId)) {
+        return res.status(404).json({ message: 'Munkalap nem található.' });
     }
-
-    const partItems = partItemService.getPartItemsByWorkOrder(workOrderId);
-
-    res.json(partItems);
+    res.json(partItemService.getPartItemsByWorkOrder(workOrderId));
 }
 
 function createPartItem(req, res) {
-    const {
-        workOrderId,
-        name,
-        quantity,
-        unitPrice
-    } = req.body;
-
-    if (
-        !workOrderId ||
-        !name ||
-        quantity === undefined ||
-        unitPrice === undefined
-    ) {
-        return res.status(400).json({
-            message: 'A munkalap, az alkatrész neve, a mennyiség és az egységár megadása kötelező.'
-        });
+    const error = validateBody(req.body);
+    if (error) return res.status(400).json({ message: error });
+    const { workOrderId, name, quantity, unitPrice } = req.body;
+    const normalizedWorkOrderId = Number(workOrderId);
+    if (!workOrderService.getWorkOrderById(normalizedWorkOrderId)) {
+        return res.status(404).json({ message: 'Munkalap nem található.' });
     }
-
-    const workOrder = workOrderService.getWorkOrderById(workOrderId);
-
-    if (!workOrder) {
-        return res.status(404).json({
-            message: 'Munkalap nem található.'
-        });
-    }
-
-    if (typeof quantity !== 'number' || quantity <= 0) {
-        return res.status(400).json({
-            message: 'A mennyiségnek pozitív számnak kell lennie.'
-        });
-    }
-
-    if (typeof unitPrice !== 'number' || unitPrice <= 0) {
-        return res.status(400).json({
-            message: 'Az egységárnak pozitív számnak kell lennie.'
-        });
-    }
-
-    const partItem = partItemService.createPartItem(
-        workOrderId,
-        name,
-        quantity,
-        unitPrice
-    );
-
-    res.status(201).json(partItem);
+    const item = partItemService.createPartItem(normalizedWorkOrderId, name.trim(), quantity, unitPrice);
+    res.status(201).json(item);
 }
 
 function getPartItemById(req, res) {
-    const id = Number(req.params.id);
-
-    const partItem = partItemService.getPartItemById(id);
-
-    if (!partItem) {
-        return res.status(404).json({
-            message: 'Alkatrésztétel nem található.'
-        });
-    }
-
-    res.json(partItem);
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen alkatrésztétel-azonosító.' });
+    const item = partItemService.getPartItemById(id);
+    if (!item) return res.status(404).json({ message: 'Alkatrésztétel nem található.' });
+    res.json(item);
 }
 
 function updatePartItem(req, res) {
-    const id = Number(req.params.id);
-
-    const {
-        workOrderId,
-        name,
-        quantity,
-        unitPrice
-    } = req.body;
-
-    if (
-        !workOrderId ||
-        !name ||
-        quantity === undefined ||
-        unitPrice === undefined
-    ) {
-        return res.status(400).json({
-            message: 'A munkalap, az alkatrész neve, a mennyiség és az egységár megadása kötelező.'
-        });
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen alkatrésztétel-azonosító.' });
+    const error = validateBody(req.body);
+    if (error) return res.status(400).json({ message: error });
+    const { workOrderId, name, quantity, unitPrice } = req.body;
+    const normalizedWorkOrderId = Number(workOrderId);
+    if (!workOrderService.getWorkOrderById(normalizedWorkOrderId)) {
+        return res.status(404).json({ message: 'Munkalap nem található.' });
     }
-
-    const workOrder = workOrderService.getWorkOrderById(workOrderId);
-
-    if (!workOrder) {
-        return res.status(404).json({
-            message: 'Munkalap nem található.'
-        });
-    }
-
-    if (typeof quantity !== 'number' || quantity <= 0) {
-        return res.status(400).json({
-            message: 'A mennyiségnek pozitív számnak kell lennie.'
-        });
-    }
-
-    if (typeof unitPrice !== 'number' || unitPrice <= 0) {
-        return res.status(400).json({
-            message: 'Az egységárnak pozitív számnak kell lennie.'
-        });
-    }
-
-    const partItem = partItemService.updatePartItem(
-        id,
-        workOrderId,
-        name,
-        quantity,
-        unitPrice
-    );
-
-    if (!partItem) {
-        return res.status(404).json({
-            message: 'Alkatrésztétel nem található.'
-        });
-    }
-
-    res.json(partItem);
+    const item = partItemService.updatePartItem(id, normalizedWorkOrderId, name.trim(), quantity, unitPrice);
+    if (!item) return res.status(404).json({ message: 'Alkatrésztétel nem található.' });
+    res.json(item);
 }
 
 function deletePartItem(req, res) {
-    const id = Number(req.params.id);
-
-    const deleted = partItemService.deletePartItem(id);
-
-    if (!deleted) {
-        return res.status(404).json({
-            message: 'Alkatrésztétel nem található.'
-        });
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen alkatrésztétel-azonosító.' });
+    if (!partItemService.deletePartItem(id)) {
+        return res.status(404).json({ message: 'Alkatrésztétel nem található.' });
     }
-
     res.status(204).send();
 }
 
-module.exports = {
-    getAllPartItems,
-    createPartItem,
-    getPartItemById,
-    updatePartItem,
-    deletePartItem,
-    getPartItemsByWorkOrder
-};
+module.exports = { getAllPartItems, getPartItemsByWorkOrder, createPartItem, getPartItemById, updatePartItem, deletePartItem };

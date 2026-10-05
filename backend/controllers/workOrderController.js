@@ -1,5 +1,6 @@
 const workOrderService = require('../services/workOrderService');
 const motorcycleService = require('../services/motorcycleService');
+const { isRecord, requiredText, positiveInteger } = require('../utils/validation');
 
 const validStatuses = [
     'OPEN',
@@ -9,6 +10,11 @@ const validStatuses = [
     'COMPLETED'
 ];
 
+function parseId(value) {
+    const id = Number(value);
+    return positiveInteger(id) ? id : null;
+}
+
 function getAllWorkOrders(req, res) {
     const workOrders = workOrderService.getAllWorkOrders();
 
@@ -16,7 +22,8 @@ function getAllWorkOrders(req, res) {
 }
 
 function getWorkOrderById(req, res) {
-    const id = Number(req.params.id);
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen munkalapazonosító.' });
 
     const workOrder = workOrderService.getWorkOrderById(id);
 
@@ -34,12 +41,10 @@ function createWorkOrder(req, res) {
         motorcycleId,
         status,
         description
-    } = req.body;
+    } = req.body ?? {};
 
-    if (!motorcycleId || !description) {
-        return res.status(400).json({
-            message: 'A motor és a leírás megadása kötelező.'
-        });
+    if (!isRecord(req.body) || !positiveInteger(Number(motorcycleId)) || !requiredText(description)) {
+        return res.status(400).json({ message: 'Érvényes motor és leírás megadása kötelező.' });
     }
 
     if (status && !validStatuses.includes(status)) {
@@ -48,33 +53,30 @@ function createWorkOrder(req, res) {
         });
     }
 
-    const motorcycle = motorcycleService.getMotorcycleById(motorcycleId);
-
-if (!motorcycle) {
-    return res.status(404).json({
-        message: 'Motor nem található.'
-    });
-}
+    const normalizedMotorcycleId = Number(motorcycleId);
+    const motorcycle = motorcycleService.getMotorcycleById(normalizedMotorcycleId);
+    if (!motorcycle) return res.status(404).json({ message: 'Motor nem található.' });
 
     const workOrder = workOrderService.createWorkOrder(
-        motorcycleId,
+        normalizedMotorcycleId,
         status || 'OPEN',
-        description
+        description.trim()
     );
 
     res.status(201).json(workOrder);
 }
 
 function updateWorkOrder(req, res) {
-    const id = Number(req.params.id);
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen munkalapazonosító.' });
 
     const {
         motorcycleId,
         status,
         description
-    } = req.body;
+    } = req.body ?? {};
 
-    if (!motorcycleId || !description || !status) {
+    if (!isRecord(req.body) || !positiveInteger(Number(motorcycleId)) || !requiredText(description) || !status) {
         return res.status(400).json({
             message: 'A motor, a státusz és a leírás megadása kötelező.'
         });
@@ -86,19 +88,15 @@ function updateWorkOrder(req, res) {
         });
     }
 
-    const motorcycle = motorcycleService.getMotorcycleById(motorcycleId);
-
-if (!motorcycle) {
-    return res.status(404).json({
-        message: 'Motor nem található.'
-    });
-}
+    const normalizedMotorcycleId = Number(motorcycleId);
+    const motorcycle = motorcycleService.getMotorcycleById(normalizedMotorcycleId);
+    if (!motorcycle) return res.status(404).json({ message: 'Motor nem található.' });
 
     const workOrder = workOrderService.updateWorkOrder(
         id,
-        motorcycleId,
+        normalizedMotorcycleId,
         status,
-        description
+        description.trim()
     );
 
     if (!workOrder) {
@@ -111,7 +109,8 @@ if (!motorcycle) {
 }
 
 function deleteWorkOrder(req, res) {
-    const id = Number(req.params.id);
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen munkalapazonosító.' });
 
     const deleted = workOrderService.deleteWorkOrder(id);
 

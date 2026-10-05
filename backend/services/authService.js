@@ -48,6 +48,37 @@ async function login(username, password) {
     };
 }
 
+async function changePassword(adminId, currentPassword, newPassword) {
+    const admin = db
+        .prepare(`
+            SELECT id, password_hash
+            FROM admins
+            WHERE id = ?
+        `)
+        .get(adminId);
+
+    if (!admin) {
+        return { status: 'not_found' };
+    }
+
+    const passwordMatches = await bcrypt.compare(
+        currentPassword,
+        admin.password_hash
+    );
+
+    if (!passwordMatches) {
+        return { status: 'invalid_current_password' };
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    const result = db
+        .prepare('UPDATE admins SET password_hash = ? WHERE id = ?')
+        .run(passwordHash, adminId);
+
+    return { status: result.changes === 1 ? 'updated' : 'not_found' };
+}
+
 module.exports = {
-    login
+    login,
+    changePassword
 };

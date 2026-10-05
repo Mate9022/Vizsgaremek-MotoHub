@@ -5,6 +5,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { Customers } from './pages/customers/customers';
 import { Motorcycles } from './pages/motorcycles/motorcycles';
 import { WorkOrders } from './pages/work-orders/work-orders';
+import { Settings } from './pages/settings/settings';
 
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
 
@@ -47,6 +48,10 @@ export const routes: Routes = [
             {
                 path: 'work-orders',
                 component: WorkOrders
+            },
+            {
+                path: 'settings',
+                component: Settings
             }
         ]
     }

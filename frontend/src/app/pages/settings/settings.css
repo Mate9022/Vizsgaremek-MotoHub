@@ -1,0 +1,144 @@
+:host {
+    display: block;
+}
+
+.settings-page {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    color: #172033;
+}
+
+.page-heading {
+    margin: 8px 0 28px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #0066cc;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 36px);
+}
+
+.page-description {
+    margin: 9px 0 0;
+    color: #64748b;
+}
+
+.settings-card {
+    max-width: 720px;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 5%);
+}
+
+.card-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.card-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border-radius: 12px;
+    background: #eff6ff;
+    font-size: 20px;
+}
+
+.card-heading h2 {
+    margin: 1px 0 6px;
+    font-size: 20px;
+}
+
+.card-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+form {
+    display: grid;
+    gap: 10px;
+}
+
+label {
+    margin-top: 8px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #172033;
+    background: #fff;
+    font: inherit;
+}
+
+input:focus {
+    border-color: #0066cc;
+    outline: 3px solid rgb(0 102 204 / 12%);
+}
+
+button {
+    justify-self: start;
+    margin-top: 12px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 8px;
+    background: #0066cc;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    background: #0052a3;
+}
+
+button:disabled {
+    cursor: wait;
+    opacity: .65;
+}
+
+.notice {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.error {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.success {
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+@media (max-width: 600px) {
+    .settings-card {
+        padding: 20px;
+    }
+}

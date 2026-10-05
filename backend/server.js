@@ -10,6 +10,7 @@ const partItemRoutes = require('./routes/partItemRoutes');
 
 const authRoutes = require('./routes/authRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
+const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -57,6 +58,9 @@ app.use(
     authMiddleware,
     partItemRoutes
 );
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`MotoHub backend elindult a ${PORT} porton.`);

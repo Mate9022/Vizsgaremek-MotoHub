@@ -29,6 +29,13 @@ export class AuthService {
         );
     }
 
+    changePassword(currentPassword: string, newPassword: string) {
+        return this.http.post<{ message: string }>(
+            `${this.apiUrl}/change-password`,
+            { currentPassword, newPassword }
+        );
+    }
+
     saveToken(token: string) {
         localStorage.setItem('motohub_token', token);
     }

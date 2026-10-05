@@ -1,0 +1,41 @@
+<section class="settings-page">
+    <header class="page-heading">
+        <div>
+            <p class="eyebrow">ADMINISZTRÁCIÓ</p>
+            <h1>Beállítások</h1>
+            <p class="page-description">A MotoHub adminfiók biztonsági beállításai.</p>
+        </div>
+    </header>
+
+    <section class="settings-card" aria-labelledby="password-heading">
+        <div class="card-heading">
+            <span class="card-icon" aria-hidden="true">🔒</span>
+            <div>
+                <h2 id="password-heading">Jelszó módosítása</h2>
+                <p>Az új jelszó legalább 12 karakterből álljon.</p>
+            </div>
+        </div>
+
+        <form #passwordForm (submit)="$event.preventDefault(); changePassword(currentPassword.value, newPassword.value, confirmPassword.value, passwordForm)">
+            <label for="current-password">Jelenlegi jelszó</label>
+            <input #currentPassword id="current-password" name="currentPassword" type="password" autocomplete="current-password" required>
+
+            <label for="new-password">Új jelszó</label>
+            <input #newPassword id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="12" required>
+
+            <label for="confirm-password">Új jelszó ismét</label>
+            <input #confirmPassword id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="12" required>
+
+            @if (errorMessage) {
+                <div class="notice error" role="alert">{{ errorMessage }}</div>
+            }
+            @if (successMessage) {
+                <div class="notice success" role="status">{{ successMessage }}</div>
+            }
+
+            <button type="submit" [disabled]="isLoading">
+                {{ isLoading ? 'Mentés...' : 'Jelszó mentése' }}
+            </button>
+        </form>
+    </section>
+</section>

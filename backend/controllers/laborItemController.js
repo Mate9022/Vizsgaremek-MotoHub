@@ -1,185 +1,77 @@
 const laborItemService = require('../services/laborItemService');
 const workOrderService = require('../services/workOrderService');
+const { isRecord, requiredText, positiveInteger, positiveNumber } = require('../utils/validation');
+
+function parseId(value) {
+    const id = Number(value);
+    return positiveInteger(id) ? id : null;
+}
+
+function validateBody(body) {
+    if (!isRecord(body) || !positiveInteger(Number(body.workOrderId)) || !requiredText(body.description)) {
+        return 'Érvényes munkalap és munkaleírás megadása kötelező.';
+    }
+    if (!positiveNumber(body.hours) || !positiveNumber(body.hourlyRate)) {
+        return 'Az óraszámnak és az óradíjnak pozitív, véges számnak kell lennie.';
+    }
+    return null;
+}
 
 function getAllLaborItems(req, res) {
-    const laborItems = laborItemService.getAllLaborItems();
-
-    res.json(laborItems);
+    res.json(laborItemService.getAllLaborItems());
 }
 
 function getLaborItemsByWorkOrder(req, res) {
-    const workOrderId = Number(req.params.workOrderId);
-
-    const workOrder = workOrderService.getWorkOrderById(workOrderId);
-
-    if (!workOrder) {
-        return res.status(404).json({
-            message: 'Munkalap nem található.'
-        });
+    const workOrderId = parseId(req.params.workOrderId);
+    if (!workOrderId) return res.status(400).json({ message: 'Érvénytelen munkalapazonosító.' });
+    if (!workOrderService.getWorkOrderById(workOrderId)) {
+        return res.status(404).json({ message: 'Munkalap nem található.' });
     }
-
-    const laborItems =
-        laborItemService.getLaborItemsByWorkOrder(workOrderId);
-
-    res.json(laborItems);
+    res.json(laborItemService.getLaborItemsByWorkOrder(workOrderId));
 }
 
 function createLaborItem(req, res) {
-
-    const {
-        workOrderId,
-        description,
-        hours,
-        hourlyRate
-    } = req.body;
-
-    if (
-        !workOrderId ||
-        !description ||
-        hours === undefined ||
-        hourlyRate === undefined
-    ) {
-        return res.status(400).json({
-            message:
-                'A munkalap, a leírás, az óraszám és az óradíj megadása kötelező.'
-        });
+    const error = validateBody(req.body);
+    if (error) return res.status(400).json({ message: error });
+    const { workOrderId, description, hours, hourlyRate } = req.body;
+    const normalizedWorkOrderId = Number(workOrderId);
+    if (!workOrderService.getWorkOrderById(normalizedWorkOrderId)) {
+        return res.status(404).json({ message: 'Munkalap nem található.' });
     }
-
-    const workOrder =
-        workOrderService.getWorkOrderById(workOrderId);
-
-    if (!workOrder) {
-        return res.status(404).json({
-            message: 'Munkalap nem található.'
-        });
-    }
-
-    if (typeof hours !== 'number' || hours <= 0) {
-        return res.status(400).json({
-            message:
-                'Az óraszámnak pozitív számnak kell lennie.'
-        });
-    }
-
-    if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
-        return res.status(400).json({
-            message:
-                'Az óradíjnak pozitív számnak kell lennie.'
-        });
-    }
-
-    const laborItem =
-        laborItemService.createLaborItem(
-            workOrderId,
-            description.trim(),
-            hours,
-            hourlyRate
-        );
-
-    res.status(201).json(laborItem);
+    const item = laborItemService.createLaborItem(normalizedWorkOrderId, description.trim(), hours, hourlyRate);
+    res.status(201).json(item);
 }
 
 function getLaborItemById(req, res) {
-
-    const id = Number(req.params.id);
-
-    const laborItem =
-        laborItemService.getLaborItemById(id);
-
-    if (!laborItem) {
-        return res.status(404).json({
-            message: 'Munkadíjtétel nem található.'
-        });
-    }
-
-    res.json(laborItem);
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen munkadíjtétel-azonosító.' });
+    const item = laborItemService.getLaborItemById(id);
+    if (!item) return res.status(404).json({ message: 'Munkadíjtétel nem található.' });
+    res.json(item);
 }
 
 function updateLaborItem(req, res) {
-
-    const id = Number(req.params.id);
-
-    const {
-        workOrderId,
-        description,
-        hours,
-        hourlyRate
-    } = req.body;
-
-    if (
-        !workOrderId ||
-        !description ||
-        hours === undefined ||
-        hourlyRate === undefined
-    ) {
-        return res.status(400).json({
-            message:
-                'A munkalap, a leírás, az óraszám és az óradíj megadása kötelező.'
-        });
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen munkadíjtétel-azonosító.' });
+    const error = validateBody(req.body);
+    if (error) return res.status(400).json({ message: error });
+    const { workOrderId, description, hours, hourlyRate } = req.body;
+    const normalizedWorkOrderId = Number(workOrderId);
+    if (!workOrderService.getWorkOrderById(normalizedWorkOrderId)) {
+        return res.status(404).json({ message: 'Munkalap nem található.' });
     }
-
-    const workOrder =
-        workOrderService.getWorkOrderById(workOrderId);
-
-    if (!workOrder) {
-        return res.status(404).json({
-            message: 'Munkalap nem található.'
-        });
-    }
-
-    if (typeof hours !== 'number' || hours <= 0) {
-        return res.status(400).json({
-            message:
-                'Az óraszámnak pozitív számnak kell lennie.'
-        });
-    }
-
-    if (typeof hourlyRate !== 'number' || hourlyRate <= 0) {
-        return res.status(400).json({
-            message:
-                'Az óradíjnak pozitív számnak kell lennie.'
-        });
-    }
-
-    const laborItem =
-        laborItemService.updateLaborItem(
-            id,
-            workOrderId,
-            description.trim(),
-            hours,
-            hourlyRate
-        );
-
-    if (!laborItem) {
-        return res.status(404).json({
-            message: 'Munkadíjtétel nem található.'
-        });
-    }
-
-    res.json(laborItem);
+    const item = laborItemService.updateLaborItem(id, normalizedWorkOrderId, description.trim(), hours, hourlyRate);
+    if (!item) return res.status(404).json({ message: 'Munkadíjtétel nem található.' });
+    res.json(item);
 }
 
 function deleteLaborItem(req, res) {
-
-    const id = Number(req.params.id);
-
-    const deleted =
-        laborItemService.deleteLaborItem(id);
-
-    if (!deleted) {
-        return res.status(404).json({
-            message: 'Munkadíjtétel nem található.'
-        });
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Érvénytelen munkadíjtétel-azonosító.' });
+    if (!laborItemService.deleteLaborItem(id)) {
+        return res.status(404).json({ message: 'Munkadíjtétel nem található.' });
     }
-
     res.status(204).send();
 }
 
-module.exports = {
-    getAllLaborItems,
-    getLaborItemsByWorkOrder,
-    createLaborItem,
-    getLaborItemById,
-    updateLaborItem,
-    deleteLaborItem
-};
+module.exports = { getAllLaborItems, getLaborItemsByWorkOrder, createLaborItem, getLaborItemById, updateLaborItem, deleteLaborItem };
